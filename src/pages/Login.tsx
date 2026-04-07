@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./Login.css";
+import { Link } from "react-router-dom";
+import "../styles/forms.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,8 +12,8 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
-      <form className="login-form" onSubmit={handleSubmit}>
+    <div className="auth-page">
+      <form className="auth-form" onSubmit={handleSubmit}>
         <h1>Login</h1>
 
         <label htmlFor="email">Email</label>
@@ -34,6 +35,10 @@ function Login() {
         />
 
         <button type="submit">Login</button>
+
+        <p className="form-footer">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
       </form>
     </div>
   );

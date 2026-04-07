@@ -1,10 +1,10 @@
-.login-page {
+.auth-page {
   display: flex;
   justify-content: center;
   padding-top: 64px;
 }
 
-.login-form {
+.auth-form {
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -12,17 +12,17 @@
   gap: 16px;
 }
 
-.login-form h1 {
+.auth-form h1 {
   margin-bottom: 8px;
 }
 
-.login-form label {
+.auth-form label {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
 }
 
-.login-form input {
+.auth-form input {
   padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: 6px;
@@ -32,11 +32,11 @@
   transition: border-color 0.2s;
 }
 
-.login-form input:focus {
+.auth-form input:focus {
   border-color: var(--color-primary);
 }
 
-.login-form button {
+.auth-form button {
   padding: 12px;
   background-color: var(--color-primary);
   color: white;
@@ -50,6 +50,21 @@
   margin-top: 8px;
 }
 
-.login-form button:hover {
+.auth-form button:hover {
   background-color: var(--color-primary-hover);
+}
+
+.form-error {
+  color: #dc2626;
+  font-size: 14px;
+  background-color: #fef2f2;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+
+.form-footer {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
 }

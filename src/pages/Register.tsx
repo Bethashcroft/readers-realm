@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./Register.css";
+import { Link } from "react-router-dom";
+import "../styles/forms.css";
 
 function Register() {
   const [name, setName] = useState("");
@@ -21,9 +22,9 @@ function Register() {
   };
 
   return (
-    <div className="register-page">
-      <form className="register-form" onSubmit={handleSubmit}>
-        <h1>Create Accounts</h1>
+    <div className="auth-page">
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <h1>Create Account</h1>
         {error && <p className="form-error">{error}</p>}
 
         <label htmlFor="name">Display Name</label>
@@ -60,6 +61,10 @@ function Register() {
           required
         />
         <button type="submit">Register</button>
+
+        <p className="form-footer">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </form>
     </div>
   );
