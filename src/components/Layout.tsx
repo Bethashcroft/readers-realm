@@ -10,6 +10,12 @@ function Layout() {
         </Link>
         <ul className="navbar-links">
           <li>
+            <Link to="/shelves">My Shelves</Link>
+          </li>
+          <li>
+            <Link to="/add-book">Add Book</Link>
+          </li>
+          <li>
             <Link to="/login">Login</Link>
           </li>
           <li>
