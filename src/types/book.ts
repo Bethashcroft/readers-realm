@@ -14,5 +14,4 @@ export interface Book {
   coverUrl: string;
   shelf: ShelfType;
   rating?: number;
-  review?: string;
 }

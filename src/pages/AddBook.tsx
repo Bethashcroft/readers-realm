@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useBooks } from "../context/BookContext";
 import type { Book, ShelfType } from "../types/book";
 import "../styles/forms.css";
 import "./AddBook.css";
 
-interface AddBookProps {
-  onAddBook: (book: Book) => void;
-}
-
-function AddBook({ onAddBook }: AddBookProps) {
+function AddBook() {
+  const { addBook } = useBooks();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -28,7 +26,7 @@ function AddBook({ onAddBook }: AddBookProps) {
       rating: rating ? Number(rating) : undefined,
     };
 
-    onAddBook(newBook);
+    addBook(newBook);
     navigate("/shelves");
   };
 

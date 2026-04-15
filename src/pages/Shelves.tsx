@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useBooks } from "../context/BookContext";
 import BookCard from "../components/BookCard";
-import type { Book, ShelfType } from "../types/book";
+import type { ShelfType } from "../types/book";
 import "./Shelves.css";
 
 const shelfLabels: Record<ShelfType, string> = {
@@ -13,11 +14,8 @@ const shelfLabels: Record<ShelfType, string> = {
   "for-sale": "For Sale",
 };
 
-interface ShelvesProps {
-  books: Book[];
-}
-
-function Shelves({ books }: ShelvesProps) {
+function Shelves() {
+  const { books } = useBooks();
   const [activeShelf, setActiveShelf] = useState<ShelfType | "all">("all");
 
   const filteredBooks =

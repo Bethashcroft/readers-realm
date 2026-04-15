@@ -15,7 +15,6 @@ export const mockBooks: Book[] = [
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780765311788-M.jpg",
     shelf: "read",
     rating: 5,
-    review: "Incredible magic system and world building.",
   },
   {
     id: "3",

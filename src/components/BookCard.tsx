@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Book } from "../types/book";
 import "./BookCard.css";
 
@@ -7,7 +8,7 @@ interface BookCardProps {
 
 function BookCard({ book }: BookCardProps) {
   return (
-    <div className="book-card">
+    <Link to={`/book/${book.id}`} className="book-card">
       <img
         className="book-cover"
         src={book.coverUrl}
@@ -23,7 +24,7 @@ function BookCard({ book }: BookCardProps) {
           </p>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 
