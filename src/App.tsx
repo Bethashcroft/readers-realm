@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Shelves from "./pages/Shelves";
 import AddBook from "./pages/AddBook";
 import BookDetail from "./pages/BookDetail";
+import Browse from "./pages/Browse";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/shelves" element={<Shelves />} />
             <Route path="/add-book" element={<AddBook />} />
             <Route path="/book/:id" element={<BookDetail />} />
+            <Route path="/browse" element={<Browse />} />
           </Route>
         </Routes>
       </BookProvider>

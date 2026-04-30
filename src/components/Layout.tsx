@@ -16,6 +16,9 @@ function Layout() {
             <Link to="/add-book">Add Book</Link>
           </li>
           <li>
+            <Link to="/browse">Browse</Link>
+          </li>
+          <li>
             <Link to="/login">Login</Link>
           </li>
           <li>

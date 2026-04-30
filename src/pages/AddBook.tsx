@@ -24,6 +24,7 @@ function AddBook() {
       coverUrl: `https://placehold.co/200x300/e2e8f0/64748b?text=${encodeURIComponent(title)}`,
       shelf,
       rating: rating ? Number(rating) : undefined,
+      owner: "bethashcroft",
     };
 
     addBook(newBook);

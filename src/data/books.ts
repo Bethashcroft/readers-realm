@@ -7,6 +7,7 @@ export const mockBooks: Book[] = [
     author: "Patrick Rothfuss",
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780756404741-M.jpg",
     shelf: "currently-reading",
+    owner: "bethashcroft",
   },
   {
     id: "2",
@@ -15,6 +16,7 @@ export const mockBooks: Book[] = [
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780765311788-M.jpg",
     shelf: "read",
     rating: 5,
+    owner: "bethashcroft",
   },
   {
     id: "3",
@@ -22,6 +24,7 @@ export const mockBooks: Book[] = [
     author: "Samantha Shannon",
     coverUrl: "https://covers.openlibrary.org/b/isbn/9781635570298-M.jpg",
     shelf: "tbr",
+    owner: "bethashcroft",
   },
   {
     id: "4",
@@ -30,6 +33,7 @@ export const mockBooks: Book[] = [
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780316556347-M.jpg",
     shelf: "read",
     rating: 4,
+    owner: "bethashcroft",
   },
   {
     id: "5",
@@ -37,6 +41,7 @@ export const mockBooks: Book[] = [
     author: "R.F. Kuang",
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780062662569-M.jpg",
     shelf: "dnf",
+    owner: "bethashcroft",
   },
   {
     id: "6",
@@ -44,6 +49,7 @@ export const mockBooks: Book[] = [
     author: "Mark Z. Danielewski",
     coverUrl: "https://covers.openlibrary.org/b/isbn/9780375703768-M.jpg",
     shelf: "available-to-borrow",
+    owner: "bethashcroft",
   },
   {
     id: "7",
@@ -51,5 +57,30 @@ export const mockBooks: Book[] = [
     author: "Susanna Clarke",
     coverUrl: "https://covers.openlibrary.org/b/isbn/9781635575996-M.jpg",
     shelf: "tbr",
+    owner: "bethashcroft",
+  },
+  {
+    id: "8",
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    coverUrl: "https://covers.openlibrary.org/b/isbn/9780547928227-M.jpg",
+    shelf: "available-to-borrow",
+    owner: "janereader",
+  },
+  {
+    id: "9",
+    title: "Dune",
+    author: "Frank Herbert",
+    coverUrl: "https://covers.openlibrary.org/b/isbn/9780441172719-M.jpg",
+    shelf: "available-to-borrow",
+    owner: "scifimark",
+  },
+  {
+    id: "10",
+    title: "The Seven Husbands of Evelyn Hugo",
+    author: "Taylor Jenkins Reid",
+    coverUrl: "https://covers.openlibrary.org/b/isbn/9781501161933-M.jpg",
+    shelf: "for-sale",
+    owner: "janereader",
   },
 ];
