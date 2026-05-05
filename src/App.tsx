@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BookProvider } from "./context/BookContext";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,20 +14,22 @@ import Browse from "./pages/Browse";
 function App() {
   return (
     <BrowserRouter>
-      <BookProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile/:username" element={<Profile />} />
-            <Route path="/shelves" element={<Shelves />} />
-            <Route path="/add-book" element={<AddBook />} />
-            <Route path="/book/:id" element={<BookDetail />} />
-            <Route path="/browse" element={<Browse />} />
-          </Route>
-        </Routes>
-      </BookProvider>
+      <AuthProvider>
+        <BookProvider>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile/:username" element={<Profile />} />
+              <Route path="/shelves" element={<Shelves />} />
+              <Route path="/add-book" element={<AddBook />} />
+              <Route path="/book/:id" element={<BookDetail />} />
+              <Route path="/browse" element={<Browse />} />
+            </Route>
+          </Routes>
+        </BookProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

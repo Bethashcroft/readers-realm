@@ -1,24 +1,33 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/forms.css";
 
 function Register() {
-  const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    setError("");
-    console.log("register attempt:", { name, email, password });
+    try {
+      await register(userName, email, displayName, password);
+      navigate("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    }
   };
 
   return (
@@ -27,12 +36,21 @@ function Register() {
         <h1>Create Account</h1>
         {error && <p className="form-error">{error}</p>}
 
-        <label htmlFor="name">Display Name</label>
+        <label htmlFor="userName">Username</label>
         <input
           type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="userName"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          required
+        />
+
+        <label htmlFor="displayName">Display Name</label>
+        <input
+          type="text"
+          id="displayName"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
           required
         />
 
