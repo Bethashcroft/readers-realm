@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import type { Book } from "../types/book";
+import type { BookResponse } from "../api/books";
 import "./BookCard.css";
 
 interface BookCardProps {
-  book: Book;
+  book: BookResponse;
 }
 
 function BookCard({ book }: BookCardProps) {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
-import type { Book, ShelfType } from "../types/book";
+import type { ShelfType } from "../types/book";
 import "../styles/forms.css";
 import "./AddBook.css";
 
@@ -13,28 +13,31 @@ function AddBook() {
   const [author, setAuthor] = useState("");
   const [shelf, setShelf] = useState<ShelfType>("tbr");
   const [rating, setRating] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
-    const newBook: Book = {
-      id: Date.now().toString(),
-      title,
-      author,
-      coverUrl: `https://placehold.co/200x300/e2e8f0/64748b?text=${encodeURIComponent(title)}`,
-      shelf,
-      rating: rating ? Number(rating) : undefined,
-      owner: "bethashcroft",
-    };
-
-    addBook(newBook);
-    navigate("/shelves");
+    try {
+      await addBook({
+        title,
+        author,
+        coverUrl: `https://placehold.co/200x300/e2e8f0/64748b?text=${encodeURIComponent(title)}`,
+        shelf,
+        rating: rating ? Number(rating) : null,
+      });
+      navigate("/shelves");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add book");
+    }
   };
 
   return (
     <div className="auth-page">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1>Add a Book</h1>
+        {error && <p className="form-error">{error}</p>}
 
         <label htmlFor="title">Title</label>
         <input

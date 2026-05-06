@@ -18,7 +18,7 @@ export async function loginUser(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Login failed");
+    throw new Error(error.message || error[0]?.description || "Login failed");
   }
 
   return response.json();
@@ -38,7 +38,9 @@ export async function registerUser(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Registration failed");
+    throw new Error(
+      error.message || error[0]?.description || "Registration failed",
+    );
   }
 
   return response.json();

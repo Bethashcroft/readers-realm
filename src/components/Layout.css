@@ -32,3 +32,15 @@
   width: 100%;
   margin: 0 auto;
 }
+
+.nav-logout {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-logout:hover {
+  color: var(--color-primary);
+}

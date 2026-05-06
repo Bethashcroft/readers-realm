@@ -1,15 +1,23 @@
-import { createContext, useContext, useState } from "react";
-import { mockBooks } from "../data/books";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { mockReviews } from "../data/reviews";
-import type { Book } from "../types/book";
+import type { BookResponse, AddBookRequest } from "../api/books";
+import { getMyBooks, addBook as addBookApi } from "../api/books";
 import type { Review } from "../types/review";
 import type { BorrowRequest } from "../types/borrow";
+import { useAuth } from "./AuthContext";
 
 interface BookContextType {
-  books: Book[];
+  books: BookResponse[];
   reviews: Review[];
   borrowRequests: BorrowRequest[];
-  addBook: (book: Book) => void;
+  loading: boolean;
+  addBook: (book: AddBookRequest) => Promise<void>;
   addReview: (review: Review) => void;
   addBorrowRequest: (request: BorrowRequest) => void;
   updateBorrowRequest: (id: string, status: BorrowRequest["status"]) => void;
@@ -18,11 +26,36 @@ interface BookContextType {
 const BookContext = createContext<BookContextType | null>(null);
 
 export function BookProvider({ children }: { children: React.ReactNode }) {
-  const [books, setBooks] = useState<Book[]>(mockBooks);
+  const [books, setBooks] = useState<BookResponse[]>([]);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [borrowRequests, setBorrowRequests] = useState<BorrowRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  const addBook = (newBook: Book) => {
+  const fetchBooks = useCallback(async () => {
+    if (!user) {
+      setBooks([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await getMyBooks();
+      setBooks(data);
+    } catch (err) {
+      console.error("Failed to fetch books:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
+
+  const addBook = async (book: AddBookRequest) => {
+    const newBook = await addBookApi(book);
     setBooks((prev) => [...prev, newBook]);
   };
 
@@ -46,6 +79,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
         books,
         reviews,
         borrowRequests,
+        loading,
         addBook,
         addReview,
         addBorrowRequest,

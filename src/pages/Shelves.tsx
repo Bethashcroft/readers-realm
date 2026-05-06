@@ -15,13 +15,17 @@ const shelfLabels: Record<ShelfType, string> = {
 };
 
 function Shelves() {
-  const { books } = useBooks();
+  const { books, loading } = useBooks();
   const [activeShelf, setActiveShelf] = useState<ShelfType | "all">("all");
 
   const filteredBooks =
     activeShelf === "all"
       ? books
       : books.filter((book) => book.shelf === activeShelf);
+
+  if (loading) {
+    return <p>Loading your shelves...</p>;
+  }
 
   return (
     <div className="shelves">
