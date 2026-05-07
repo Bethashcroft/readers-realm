@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
+import { useAuth } from "../context/AuthContext";
 import type { Review } from "../types/review";
 import "./BookDetail.css";
 
 function BookDetail() {
   const { books, reviews, addReview } = useBooks();
+  const { user } = useAuth();
   const { id } = useParams();
-  const book = books.find((b) => b.id === id);
+  const book = books.find((b) => b.id === Number(id));
 
   const [rating, setRating] = useState("");
   const [text, setText] = useState("");
@@ -16,15 +18,15 @@ function BookDetail() {
     return <p>Book not found</p>;
   }
 
-  const bookReviews = reviews.filter((r) => r.bookId === book.id);
+  const bookReviews = reviews.filter((r) => r.bookId === String(book.id));
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newReview: Review = {
       id: Date.now().toString(),
-      bookId: book.id,
-      userName: "Beth Ashcroft",
+      bookId: String(book.id),
+      userName: user?.displayName || "Anonymous",
       rating: Number(rating),
       text,
       date: new Date().toISOString().split("T")[0],

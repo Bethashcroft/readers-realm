@@ -10,6 +10,7 @@ import Shelves from "./pages/Shelves";
 import AddBook from "./pages/AddBook";
 import BookDetail from "./pages/BookDetail";
 import Browse from "./pages/Browse";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -21,10 +22,38 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/profile/:username" element={<Profile />} />
-              <Route path="/shelves" element={<Shelves />} />
-              <Route path="/add-book" element={<AddBook />} />
-              <Route path="/book/:id" element={<BookDetail />} />
+              <Route
+                path="/profile/:username"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/shelves"
+                element={
+                  <ProtectedRoute>
+                    <Shelves />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-book"
+                element={
+                  <ProtectedRoute>
+                    <AddBook />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/book/:id"
+                element={
+                  <ProtectedRoute>
+                    <BookDetail />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/browse" element={<Browse />} />
             </Route>
           </Routes>

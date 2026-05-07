@@ -1,39 +1,42 @@
-import { useState } from "react";
-import { useBooks } from "../context/BookContext";
-import type { BorrowRequest } from "../types/borrow";
+import { useState, useEffect } from "react";
+import { browseBooks } from "../api/books";
+import type { BookResponse } from "../api/books";
+import { useAuth } from "../context/AuthContext";
 import "./Browse.css";
 
 function Browse() {
-  const { books, addBorrowRequest } = useBooks();
+  const { user } = useAuth();
+  const [books, setBooks] = useState<BookResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [requestingBookId, setRequestingBookId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
-  const [requestingBookId, setRequestingBookId] = useState<string | null>(null);
-  const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
+  const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
 
-  const currentUser = "bethashcroft";
-
-  const availableBooks = books.filter(
-    (book) =>
-      (book.shelf === "available-to-borrow" || book.shelf === "for-sale") &&
-      book.owner !== currentUser,
-  );
-
-  const handleRequest = (bookId: string, bookTitle: string, toUser: string) => {
-    const newRequest: BorrowRequest = {
-      id: Date.now().toString(),
-      bookId,
-      bookTitle,
-      fromUser: currentUser,
-      toUser,
-      status: "pending",
-      message,
-      date: new Date().toISOString().split("T")[0],
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const data = await browseBooks();
+        setBooks(data);
+      } catch (err) {
+        console.error("Failed to load browse books:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    addBorrowRequest(newRequest);
+    fetchBooks();
+  }, []);
+
+  const handleRequest = (bookId: number) => {
     setSentRequests((prev) => new Set(prev).add(bookId));
     setRequestingBookId(null);
     setMessage("");
   };
+
+  if (loading) {
+    return <p>Loading books...</p>;
+  }
+
   return (
     <div className="browse">
       <h1>Browse Nearby Books</h1>
@@ -44,11 +47,11 @@ function Browse() {
         For your safety, always arrange exchanges through in-app messaging.
         Never share personal contact details.
       </div>
-      {availableBooks.length === 0 && (
+      {books.length === 0 && (
         <p className="empty-browse">No books available nearby right now.</p>
       )}
       <div className="browse-list">
-        {availableBooks.map((book) => (
+        {books.map((book) => (
           <div key={book.id} className="browse-card">
             <img
               className="browse-cover"
@@ -58,11 +61,12 @@ function Browse() {
             <div className="browse-info">
               <h2>{book.title}</h2>
               <p className="browse-author">{book.author}</p>
-              <p className="browse-owner">Owned by @{book.owner}</p>
               <span className={`browse-badge ${book.shelf}`}>
                 {book.shelf === "for-sale" ? "For Sale" : "Available to Borrow"}
               </span>
-              {sentRequests.has(book.id) ? (
+              {!user ? (
+                <p className="login-prompt">Log in to request this book</p>
+              ) : sentRequests.has(book.id) ? (
                 <p className="request-sent">Request sent!</p>
               ) : requestingBookId === book.id ? (
                 <div className="request-form">
@@ -75,9 +79,7 @@ function Browse() {
                   <div className="request-actions">
                     <button
                       className="btn btn-primary"
-                      onClick={() =>
-                        handleRequest(book.id, book.title, book.owner)
-                      }
+                      onClick={() => handleRequest(book.id)}
                     >
                       Send Request
                     </button>
