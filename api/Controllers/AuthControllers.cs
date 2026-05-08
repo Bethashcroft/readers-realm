@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -57,6 +58,54 @@ public class AuthController : ControllerBase
         return Ok(new AuthResponse { Token = token, UserName = user.UserName!, DisplayName = user.DisplayName });
     }
 
+    [HttpGet("profile")]
+    [Authorize]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+
+        if(user == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(new ProfileResponse
+        {
+            UserName = user.UserName!,
+            DisplayName = user.DisplayName,
+            Bio = user.Bio,
+            JoinedDate = user.JoinedDate
+        });
+    }
+
+    [HttpPut("profile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+
+        if(user == null)
+        {
+            return NotFound();
+        }
+
+        user.DisplayName = request.DisplayName;
+        user.Bio = request.Bio;
+
+        await _userManager.UpdateAsync(user);
+
+        return Ok(new ProfileResponse
+        {
+            UserName = user.UserName!,
+            DisplayName = user.DisplayName,
+            Bio = user.Bio,
+            JoinedDate = user.JoinedDate
+        });
+    }
+
+
     private string GenerateToken(AppUser user)
     {
         var claims = new[]
@@ -100,4 +149,18 @@ public class AuthResponse
     public string Token { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
+}
+
+public class ProfileResponse
+{
+    public string UserName { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
+    public DateTime JoinedDate { get; set; }
+}
+
+public class UpdateProfileRequest
+{
+    public string DisplayName { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
 }

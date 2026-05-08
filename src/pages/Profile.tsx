@@ -1,52 +1,134 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import type { User } from "../types/user";
+import { useBooks } from "../context/BookContext";
+import { getProfile, updateProfile } from "../api/profile";
+import type { ProfileResponse } from "../api/profile";
+import BookCard from "../components/BookCard";
+import "../styles/forms.css";
 import "./Profile.css";
-
-const mockUser: User = {
-  id: "1",
-  name: "Beth Ashcroft",
-  email: "bethashcroft1998@gmail.com",
-  bio: "Thriller reader. Dog person. Will always have my Kindle.",
-  favouriteGenres: ["Thriller", "Mystery", "Romance"],
-  joinedDate: "2026-04-09",
-};
 
 function Profile() {
   const { username } = useParams();
+  const { books } = useBooks();
+  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [bio, setBio] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile();
+        setProfile(data);
+        setDisplayName(data.displayName);
+        setBio(data.bio);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    setError("");
+
+    try {
+      const updated = await updateProfile({ displayName, bio });
+      setProfile(updated);
+      setEditing(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update profile");
+    }
+  };
+
+  if (loading) {
+    return <p>Loading profile...</p>;
+  }
+
+  if (!profile) {
+    return <p>Profile not found</p>;
+  }
 
   return (
     <div className="profile">
       <div className="profile-header">
-        <div className="profile-avatar">{mockUser.name.charAt(0)}</div>
+        <div className="profile-avatar">{profile.displayName.charAt(0)}</div>
         <div className="profile-info">
-          <h1>{mockUser.name}</h1>
-          <p className="profile-username">@{username}</p>
-          <p className="profile-bio">{mockUser.bio}</p>
+          {editing ? (
+            <div className="edit-profile-form">
+              <label htmlFor="displayName">Display Name</label>
+              <input
+                type="text"
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+              <label htmlFor="bio">Bio</label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+              />
+              {error && <p className="form-error">{error}</p>}
+              <div className="edit-profile-actions">
+                <button className="btn btn-primary" onClick={handleSave}>
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setEditing(false);
+                    setDisplayName(profile.displayName);
+                    setBio(profile.bio);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h1>{profile.displayName}</h1>
+              <p className="profile-username">@{username}</p>
+              <p className="profile-bio">{profile.bio || "No bio yet"}</p>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setEditing(true)}
+              >
+                Edit Profile
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       <div className="profile-details">
         <div className="profile-detail-card">
-          <h2>Favourite Genres</h2>
-          <div className="genre-tags">
-            {mockUser.favouriteGenres.map((genre) => (
-              <span key={genre} className="genre-tag">
-                {genre}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="profile-detail-card">
           <h2>Member Since</h2>
           <p>
-            {new Date(mockUser.joinedDate).toLocaleDateString("en-GB", {
+            {new Date(profile.joinedDate).toLocaleDateString("en-GB", {
               month: "long",
               year: "numeric",
             })}
           </p>
         </div>
       </div>
+
+      <section className="profile-books">
+        <h2>My Books ({books.length})</h2>
+        <div className="book-grid">
+          {books.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
+        {books.length === 0 && <p>No books added yet.</p>}
+      </section>
     </div>
   );
 }

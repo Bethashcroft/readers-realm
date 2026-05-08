@@ -5,20 +5,16 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { mockReviews } from "../data/reviews";
 import type { BookResponse, AddBookRequest } from "../api/books";
 import { getMyBooks, addBook as addBookApi } from "../api/books";
-import type { Review } from "../types/review";
 import type { BorrowRequest } from "../types/borrow";
 import { useAuth } from "./AuthContext";
 
 interface BookContextType {
   books: BookResponse[];
-  reviews: Review[];
   borrowRequests: BorrowRequest[];
   loading: boolean;
   addBook: (book: AddBookRequest) => Promise<void>;
-  addReview: (review: Review) => void;
   addBorrowRequest: (request: BorrowRequest) => void;
   updateBorrowRequest: (id: string, status: BorrowRequest["status"]) => void;
 }
@@ -27,7 +23,6 @@ const BookContext = createContext<BookContextType | null>(null);
 
 export function BookProvider({ children }: { children: React.ReactNode }) {
   const [books, setBooks] = useState<BookResponse[]>([]);
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [borrowRequests, setBorrowRequests] = useState<BorrowRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -59,10 +54,6 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     setBooks((prev) => [...prev, newBook]);
   };
 
-  const addReview = (newReview: Review) => {
-    setReviews((prev) => [...prev, newReview]);
-  };
-
   const addBorrowRequest = (request: BorrowRequest) => {
     setBorrowRequests((prev) => [...prev, request]);
   };
@@ -77,11 +68,9 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     <BookContext.Provider
       value={{
         books,
-        reviews,
         borrowRequests,
         loading,
         addBook,
-        addReview,
         addBorrowRequest,
         updateBorrowRequest,
       }}

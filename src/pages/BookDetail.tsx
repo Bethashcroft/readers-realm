@@ -1,40 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
-import { useAuth } from "../context/AuthContext";
-import type { Review } from "../types/review";
+import { getReviewsForBook, addReview as addReviewApi } from "../api/reviews";
+import type { ReviewResponse } from "../api/reviews";
 import "./BookDetail.css";
 
 function BookDetail() {
-  const { books, reviews, addReview } = useBooks();
-  const { user } = useAuth();
+  const { books } = useBooks();
   const { id } = useParams();
   const book = books.find((b) => b.id === Number(id));
 
+  const [reviews, setReviews] = useState<ReviewResponse[]>([]);
   const [rating, setRating] = useState("");
   const [text, setText] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!book) return;
+
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviewsForBook(book.id);
+        setReviews(data);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      }
+    };
+
+    fetchReviews();
+  }, [book]);
 
   if (!book) {
     return <p>Book not found</p>;
   }
 
-  const bookReviews = reviews.filter((r) => r.bookId === String(book.id));
-
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const newReview: Review = {
-      id: Date.now().toString(),
-      bookId: String(book.id),
-      userName: user?.displayName || "Anonymous",
-      rating: Number(rating),
-      text,
-      date: new Date().toISOString().split("T")[0],
-    };
-
-    addReview(newReview);
-    setRating("");
-    setText("");
+    setError("");
+    try {
+      const newReview = await addReviewApi({
+        rating: Number(rating),
+        text,
+        bookId: book.id,
+      });
+      setReviews((prev) => [...prev, newReview]);
+      setRating("");
+      setText("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add review");
+    }
   };
 
   return (
@@ -61,9 +75,9 @@ function BookDetail() {
       </div>
 
       <section className="reviews-section">
-        <h2>Reviews ({bookReviews.length})</h2>
+        <h2>Reviews ({reviews.length})</h2>
 
-        {bookReviews.map((review) => (
+        {reviews.map((review) => (
           <div key={review.id} className="review-card">
             <div className="review-header">
               <span className="review-author">{review.userName}</span>
@@ -84,13 +98,14 @@ function BookDetail() {
           </div>
         ))}
 
-        {bookReviews.length === 0 && (
+        {reviews.length === 0 && (
           <p className="no-reviews">No reviews yet. Be the first!</p>
         )}
       </section>
 
       <section className="add-review-section">
         <h2>Write a Review</h2>
+        {error && <p className="form-error">{error}</p>}
         <form className="review-form" onSubmit={handleSubmit}>
           <label htmlFor="review-rating">Rating</label>
           <select
@@ -113,7 +128,6 @@ function BookDetail() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={4}
-            required
           />
 
           <button type="submit">Submit Review</button>
