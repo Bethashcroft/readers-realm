@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReadersRealm.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3564943f5cdd1984dba7d73cbe483d3071c6e4f1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bbe430b113472f032e15db348f560348649ce21")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReadersRealm.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReadersRealm.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

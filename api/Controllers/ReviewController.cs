@@ -14,6 +14,7 @@ public class ReviewsController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly UserManager<AppUser> _userManager;
+
     public ReviewsController(AppDbContext context, UserManager<AppUser> userManager)
     {
         _context = context;
@@ -23,8 +24,8 @@ public class ReviewsController : ControllerBase
     [HttpGet("book/{bookId}")]
     public async Task<IActionResult> GetReviewsForBook(int bookId)
     {
-        var reviews = await _context.Reviews
-            .Where(r => r.BookId == bookId)
+        var reviews = await _context
+            .Reviews.Where(r => r.BookId == bookId)
             .Select(r => new ReviewResponse
             {
                 Id = r.Id,
@@ -32,7 +33,7 @@ public class ReviewsController : ControllerBase
                 Text = r.Text,
                 Date = r.Date,
                 BookId = r.BookId,
-                UserName = r.User.DisplayName
+                UserName = r.User.DisplayName,
             })
             .ToListAsync();
 
@@ -50,7 +51,7 @@ public class ReviewsController : ControllerBase
             Rating = request.Rating,
             Text = request.Text,
             BookId = request.BookId,
-            UserId = userId!
+            UserId = userId!,
         };
 
         _context.Reviews.Add(review);
@@ -58,15 +59,17 @@ public class ReviewsController : ControllerBase
 
         var user = await _userManager.FindByIdAsync(userId!);
 
-        return Ok(new ReviewResponse
-        {
-            Id = review.Id,
-            Rating = review.Rating,
-            Text = review.Text,
-            Date = review.Date,
-            BookId = review.BookId,
-            UserName = user?.DisplayName ?? "Unknown"
-        });
+        return Ok(
+            new ReviewResponse
+            {
+                Id = review.Id,
+                Rating = review.Rating,
+                Text = review.Text,
+                Date = review.Date,
+                BookId = review.BookId,
+                UserName = user?.DisplayName ?? "Unknown",
+            }
+        );
     }
 
     [HttpDelete("{id}")]
@@ -76,7 +79,7 @@ public class ReviewsController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var review = await _context.Reviews.FindAsync(id);
 
-        if(review == null || review.UserId != userId)
+        if (review == null || review.UserId != userId)
         {
             return NotFound();
         }
@@ -86,7 +89,7 @@ public class ReviewsController : ControllerBase
 
         return Ok();
     }
-}   
+}
 
 public class AddReviewRequest
 {
@@ -94,6 +97,7 @@ public class AddReviewRequest
     public string Text { get; set; } = string.Empty;
     public int BookId { get; set; }
 }
+
 public class ReviewResponse
 {
     public int Id { get; set; }

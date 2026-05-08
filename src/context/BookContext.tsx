@@ -6,7 +6,12 @@ import {
   useCallback,
 } from "react";
 import type { BookResponse, AddBookRequest } from "../api/books";
-import { getMyBooks, addBook as addBookApi } from "../api/books";
+import {
+  getMyBooks,
+  addBook as addBookApi,
+  updateBook as updateBookApi,
+  deleteBook as deleteBookApi,
+} from "../api/books";
 import type { BorrowRequest } from "../types/borrow";
 import { useAuth } from "./AuthContext";
 
@@ -15,6 +20,8 @@ interface BookContextType {
   borrowRequests: BorrowRequest[];
   loading: boolean;
   addBook: (book: AddBookRequest) => Promise<void>;
+  updateBook: (id: number, book: AddBookRequest) => Promise<void>;
+  removeBook: (id: number) => Promise<void>;
   addBorrowRequest: (request: BorrowRequest) => void;
   updateBorrowRequest: (id: string, status: BorrowRequest["status"]) => void;
 }
@@ -54,6 +61,16 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     setBooks((prev) => [...prev, newBook]);
   };
 
+  const updateBook = async (id: number, bookData: AddBookRequest) => {
+    const updated = await updateBookApi(id, bookData);
+    setBooks((prev) => prev.map((b) => (b.id === id ? updated : b)));
+  };
+
+  const removeBook = async (id: number) => {
+    await deleteBookApi(id);
+    setBooks((prev) => prev.filter((b) => b.id !== id));
+  };
+
   const addBorrowRequest = (request: BorrowRequest) => {
     setBorrowRequests((prev) => [...prev, request]);
   };
@@ -71,6 +88,8 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
         borrowRequests,
         loading,
         addBook,
+        updateBook,
+        removeBook,
         addBorrowRequest,
         updateBorrowRequest,
       }}

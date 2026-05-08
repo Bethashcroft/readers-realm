@@ -29,19 +29,25 @@ public class AuthController : ControllerBase
         {
             UserName = request.UserName,
             Email = request.Email,
-            DisplayName = request.DisplayName
+            DisplayName = request.DisplayName,
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
 
-        if(!result.Succeeded)
+        if (!result.Succeeded)
         {
             return BadRequest(result.Errors);
         }
 
         var token = GenerateToken(user);
-        return Ok(new AuthResponse { Token = token, UserName = user.UserName!, DisplayName = user.DisplayName });
-    
+        return Ok(
+            new AuthResponse
+            {
+                Token = token,
+                UserName = user.UserName!,
+                DisplayName = user.DisplayName,
+            }
+        );
     }
 
     [HttpPost("login")]
@@ -49,13 +55,20 @@ public class AuthController : ControllerBase
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
-        if(user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
+        if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
         {
-            return Unauthorized(new {message = "Invalid email or password"});
+            return Unauthorized(new { message = "Invalid email or password" });
         }
 
         var token = GenerateToken(user);
-        return Ok(new AuthResponse { Token = token, UserName = user.UserName!, DisplayName = user.DisplayName });
+        return Ok(
+            new AuthResponse
+            {
+                Token = token,
+                UserName = user.UserName!,
+                DisplayName = user.DisplayName,
+            }
+        );
     }
 
     [HttpGet("profile")]
@@ -65,18 +78,20 @@ public class AuthController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId!);
 
-        if(user == null)
+        if (user == null)
         {
             return NotFound();
         }
 
-        return Ok(new ProfileResponse
-        {
-            UserName = user.UserName!,
-            DisplayName = user.DisplayName,
-            Bio = user.Bio,
-            JoinedDate = user.JoinedDate
-        });
+        return Ok(
+            new ProfileResponse
+            {
+                UserName = user.UserName!,
+                DisplayName = user.DisplayName,
+                Bio = user.Bio,
+                JoinedDate = user.JoinedDate,
+            }
+        );
     }
 
     [HttpPut("profile")]
@@ -86,7 +101,7 @@ public class AuthController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId!);
 
-        if(user == null)
+        if (user == null)
         {
             return NotFound();
         }
@@ -96,15 +111,16 @@ public class AuthController : ControllerBase
 
         await _userManager.UpdateAsync(user);
 
-        return Ok(new ProfileResponse
-        {
-            UserName = user.UserName!,
-            DisplayName = user.DisplayName,
-            Bio = user.Bio,
-            JoinedDate = user.JoinedDate
-        });
+        return Ok(
+            new ProfileResponse
+            {
+                UserName = user.UserName!,
+                DisplayName = user.DisplayName,
+                Bio = user.Bio,
+                JoinedDate = user.JoinedDate,
+            }
+        );
     }
-
 
     private string GenerateToken(AppUser user)
     {
@@ -112,7 +128,7 @@ public class AuthController : ControllerBase
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName!),
-            new Claim(ClaimTypes.Email, user.Email!)
+            new Claim(ClaimTypes.Email, user.Email!),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -132,10 +148,10 @@ public class AuthController : ControllerBase
 
 public class RegisterRequest
 {
-    public string UserName {get; set;} = string.Empty;
-    public string Email {get; set;} = string.Empty;
-    public string DisplayName {get; set;} = string.Empty;
-    public string Password {get; set;} = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }
 
 public class LoginRequest

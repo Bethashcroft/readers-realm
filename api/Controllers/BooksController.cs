@@ -24,9 +24,7 @@ public class BooksController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var books = await _context.Books
-                    .Where(b => b.UserId == userId)
-                    .ToListAsync();
+        var books = await _context.Books.Where(b => b.UserId == userId).ToListAsync();
 
         return Ok(books);
     }
@@ -35,9 +33,9 @@ public class BooksController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Browse()
     {
-        var books = await _context.Books
-                    .Where(b => b.Shelf == "available-to-borrow" || b.Shelf == "for-sale")
-                    .ToListAsync();
+        var books = await _context
+            .Books.Where(b => b.Shelf == "available-to-borrow" || b.Shelf == "for-sale")
+            .ToListAsync();
 
         return Ok(books);
     }
@@ -54,7 +52,7 @@ public class BooksController : ControllerBase
             CoverUrl = request.CoverUrl,
             Shelf = request.Shelf,
             Rating = request.Rating,
-            UserId = userId!
+            UserId = userId!,
         };
 
         _context.Books.Add(book);
@@ -70,7 +68,7 @@ public class BooksController : ControllerBase
 
         var book = await _context.Books.FindAsync(id);
 
-        if(book == null || book.UserId != userId)
+        if (book == null || book.UserId != userId)
         {
             return NotFound();
         }
@@ -104,7 +102,6 @@ public class BooksController : ControllerBase
         return Ok();
     }
 }
-
 
 public class AddBookRequest
 {
