@@ -10,6 +10,7 @@ import Shelves from "./pages/Shelves";
 import AddBook from "./pages/AddBook";
 import BookDetail from "./pages/BookDetail";
 import Browse from "./pages/Browse";
+import Requests from "./pages/Requests";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -55,6 +56,14 @@ function App() {
                 }
               />
               <Route path="/browse" element={<Browse />} />
+              <Route
+                path="/requests"
+                element={
+                  <ProtectedRoute>
+                    <Requests />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           </Routes>
         </BookProvider>

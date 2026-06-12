@@ -6,13 +6,3 @@ export type ShelfType =
   | "available-to-borrow"
   | "lent-out"
   | "for-sale";
-
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl: string;
-  shelf: ShelfType;
-  rating?: number;
-  owner: string;
-}

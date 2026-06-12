@@ -30,6 +30,9 @@ function Layout() {
           {user ? (
             <>
               <li>
+                <Link to="/requests">Requests</Link>
+              </li>
+              <li>
                 <Link to={`/profile/${user.userName}`}>{user.displayName}</Link>
               </li>
               <li>

@@ -2,6 +2,7 @@ const BASE_URL = "http://localhost:5128/api";
 
 export interface AuthResponse {
   token: string;
+  userId: string;
   userName: string;
   displayName: string;
 }

@@ -79,6 +79,8 @@ function Browse() {
               </span>
               {!user ? (
                 <p className="login-prompt">Log in to request this book</p>
+              ) : book.userId === user.userId ? (
+                <p className="own-book-label">Your book</p>
               ) : sentRequests.has(book.id) ? (
                 <p className="request-sent">Request sent!</p>
               ) : requestingBookId === book.id ? (

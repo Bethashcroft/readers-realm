@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import type { AuthResponse } from "../api/auth";
 import { loginUser, registerUser } from "../api/auth";
 
@@ -17,14 +17,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthResponse | null>(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState<AuthResponse | null>(() => {
     const stored = localStorage.getItem("user");
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-  }, []);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored);
+    return parsed.userId ? parsed : null;
+  });
 
   const login = async (email: string, password: string) => {
     const data = await loginUser(email, password);

@@ -166,3 +166,9 @@
     text-align: center;
   }
 }
+
+.own-book-label {
+  color: #64748b;
+  font-style: italic;
+  font-size: 0.9rem;
+}

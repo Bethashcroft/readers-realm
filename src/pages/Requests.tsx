@@ -1,0 +1,122 @@
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getMyRequests, updateBorrowStatus } from "../api/borrow";
+import type { BorrowRequestResponse, BorrowStatus } from "../api/borrow";
+import "./Requests.css";
+
+function Requests() {
+  const { user } = useAuth();
+  const [requests, setRequests] = useState<BorrowRequestResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const data = await getMyRequests();
+        setRequests(data);
+      } catch (err) {
+        console.error("Failed to fetch requests:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  const incoming = requests.filter((r) => r.toUserId === user?.userId);
+  const outgoing = requests.filter((r) => r.fromUserId === user?.userId);
+
+  const handleStatusChange = async (id: number, status: BorrowStatus) => {
+    setError("");
+    setUpdatingId(id);
+
+    try {
+      const updated = await updateBorrowStatus(id, status);
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update request");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  if (loading) {
+    return <p>Loading requests...</p>;
+  }
+
+  return (
+    <div className="requests">
+      <h1>Borrow Requests</h1>
+      {error && <p className="form-error">{error}</p>}
+
+      <section className="requests-section">
+        <h2>Incoming ({incoming.length})</h2>
+        {incoming.length === 0 && (
+          <p className="empty-requests">No one has requested your books yet.</p>
+        )}
+        {incoming.map((req) => (
+          <div key={req.id} className="request-card">
+            <div className="request-details">
+              <h3>{req.bookTitle}</h3>
+              {req.message && (
+                <p className="request-message">"{req.message}"</p>
+              )}
+              <p className="request-date">{formatDate(req.date)}</p>
+            </div>
+            {req.status === "pending" ? (
+              <div className="request-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleStatusChange(req.id, "accepted")}
+                  disabled={updatingId === req.id}
+                >
+                  Accept
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleStatusChange(req.id, "declined")}
+                  disabled={updatingId === req.id}
+                >
+                  Decline
+                </button>
+              </div>
+            ) : (
+              <span className={`status-badge ${req.status}`}>{req.status}</span>
+            )}
+          </div>
+        ))}
+      </section>
+
+      <section className="requests-section">
+        <h2>Outgoing ({outgoing.length})</h2>
+        {outgoing.length === 0 && (
+          <p className="empty-requests">You haven't requested any books yet.</p>
+        )}
+        {outgoing.map((req) => (
+          <div key={req.id} className="request-card">
+            <div className="request-details">
+              <h3>{req.bookTitle}</h3>
+              {req.message && (
+                <p className="request-message">"{req.message}"</p>
+              )}
+              <p className="request-date">{formatDate(req.date)}</p>
+            </div>
+            <span className={`status-badge ${req.status}`}>{req.status}</span>
+          </div>
+        ))}
+      </section>
+    </div>
+  );
+}
+
+export default Requests;

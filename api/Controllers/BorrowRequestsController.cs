@@ -36,6 +36,15 @@ public class BorrowRequestsController : ControllerBase
             return BadRequest(new { message = "You cannot request your own book" });
         }
 
+        var alreadyRequested = await _context.BorrowRequests.AnyAsync(r =>
+            r.BookId == request.BookId && r.FromUserId == fromUserId && r.Status == "pending"
+        );
+
+        if (alreadyRequested)
+        {
+            return BadRequest(new { message = "You already have a pending request for this book" });
+        }
+
         var borrowRequest = new BorrowRequest
         {
             BookId = book.Id,
