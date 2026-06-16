@@ -18,6 +18,13 @@ public class AppDbContext : IdentityDbContext<AppUser>
         base.OnModelCreating(builder);
 
         builder
+            .Entity<AppUser>()
+            .HasIndex(u => u.NormalizedEmail)
+            .HasDatabaseName("EmailIndex")
+            .IsUnique()
+            .HasFilter("[NormalizedEmail] IS NOT NULL");
+
+        builder
             .Entity<BorrowRequest>()
             .HasOne(b => b.FromUser)
             .WithMany()

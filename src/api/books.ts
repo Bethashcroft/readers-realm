@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:5128/api";
+import { BASE_URL, getHeaders, parseError } from "./client";
+
 export interface BookResponse {
   id: number;
   title: string;
@@ -8,6 +9,7 @@ export interface BookResponse {
   rating: number | null;
   userId: string;
 }
+
 export interface AddBookRequest {
   title: string;
   author: string;
@@ -16,28 +18,13 @@ export interface AddBookRequest {
   rating: number | null;
 }
 
-function getHeaders(): Record<string, string> {
-  const stored = localStorage.getItem("user");
-  const token = stored ? JSON.parse(stored).token : null;
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return headers;
-}
-
 export async function getMyBooks(): Promise<BookResponse[]> {
   const response = await fetch(`${BASE_URL}/books`, {
     headers: getHeaders(),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch books");
+    throw new Error(await parseError(response, "Failed to fetch books"));
   }
 
   return response.json();
@@ -45,22 +32,52 @@ export async function getMyBooks(): Promise<BookResponse[]> {
 
 export async function browseBooks(): Promise<BookResponse[]> {
   const response = await fetch(`${BASE_URL}/books/browse`);
+
   if (!response.ok) {
-    throw new Error("Failed to fetch books");
+    throw new Error(await parseError(response, "Failed to fetch books"));
   }
+
   return response.json();
 }
+
+export async function getBook(id: number): Promise<BookResponse> {
+  const response = await fetch(`${BASE_URL}/books/${id}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, "Failed to fetch book"));
+  }
+
+  return response.json();
+}
+
+export async function getUserBooks(username: string): Promise<BookResponse[]> {
+  const response = await fetch(`${BASE_URL}/users/${username}/books`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, "Failed to fetch books"));
+  }
+
+  return response.json();
+}
+
 export async function addBook(book: AddBookRequest): Promise<BookResponse> {
   const response = await fetch(`${BASE_URL}/books`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(book),
   });
+
   if (!response.ok) {
-    throw new Error("Failed to add book");
+    throw new Error(await parseError(response, "Failed to add book"));
   }
+
   return response.json();
 }
+
 export async function updateBook(
   id: number,
   book: AddBookRequest,
@@ -70,17 +87,21 @@ export async function updateBook(
     headers: getHeaders(),
     body: JSON.stringify(book),
   });
+
   if (!response.ok) {
-    throw new Error("Failed to update book");
+    throw new Error(await parseError(response, "Failed to update book"));
   }
+
   return response.json();
 }
+
 export async function deleteBook(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/books/${id}`, {
     method: "DELETE",
     headers: getHeaders(),
   });
+
   if (!response.ok) {
-    throw new Error("Failed to delete book");
+    throw new Error(await parseError(response, "Failed to delete book"));
   }
 }

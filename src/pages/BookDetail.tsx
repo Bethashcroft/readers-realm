@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
+import { useAuth } from "../context/AuthContext";
+import { getBook } from "../api/books";
+import type { BookResponse } from "../api/books";
 import { getReviewsForBook, addReview as addReviewApi } from "../api/reviews";
 import type { ReviewResponse } from "../api/reviews";
 import type { ShelfType } from "../types/book";
@@ -17,11 +20,13 @@ const shelfLabels: Record<ShelfType, string> = {
 };
 
 function BookDetail() {
-  const { books, updateBook, removeBook } = useBooks();
+  const { updateBook, removeBook } = useBooks();
+  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
-  const book = books.find((b) => b.id === Number(id));
 
+  const [book, setBook] = useState<BookResponse | null>(null);
+  const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<ReviewResponse[]>([]);
   const [rating, setRating] = useState("");
   const [text, setText] = useState("");
@@ -30,25 +35,33 @@ function BookDetail() {
   const [bookRating, setBookRating] = useState("");
 
   useEffect(() => {
-    if (!book) return;
-    setShelf(book.shelf);
-    setBookRating(book.rating ? String(book.rating) : "");
-
-    const fetchReviews = async () => {
+    const fetchBook = async () => {
       try {
-        const data = await getReviewsForBook(book.id);
-        setReviews(data);
+        const data = await getBook(Number(id));
+        setBook(data);
+        setShelf(data.shelf);
+        setBookRating(data.rating ? String(data.rating) : "");
+        const reviewData = await getReviewsForBook(data.id);
+        setReviews(reviewData);
       } catch (err) {
-        console.error("Failed to fetch reviews:", err);
+        console.error("Failed to load book:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchReviews();
-  }, [book]);
+    fetchBook();
+  }, [id]);
+
+  if (loading) {
+    return <p>Loading book...</p>;
+  }
 
   if (!book) {
     return <p>Book not found</p>;
   }
+
+  const isOwner = user?.userId === book.userId;
 
   const handleShelfChange = async (newShelf: string) => {
     setShelf(newShelf);
@@ -60,6 +73,7 @@ function BookDetail() {
         shelf: newShelf,
         rating: bookRating ? Number(bookRating) : null,
       });
+      setBook({ ...book, shelf: newShelf });
     } catch (err) {
       console.error("Failed to update shelf:", err);
       setShelf(book.shelf);
@@ -76,6 +90,7 @@ function BookDetail() {
         shelf,
         rating: newRating ? Number(newRating) : null,
       });
+      setBook({ ...book, rating: newRating ? Number(newRating) : null });
     } catch (err) {
       console.error("Failed to update rating:", err);
       setBookRating(book.rating ? String(book.rating) : "");
@@ -124,38 +139,49 @@ function BookDetail() {
           <h1>{book.title}</h1>
           <p className="book-detail-author">by {book.author}</p>
 
-          <div className="book-detail-controls">
-            <label htmlFor="book-shelf">Shelf</label>
-            <select
-              id="book-shelf"
-              value={shelf}
-              onChange={(e) => handleShelfChange(e.target.value)}
-            >
-              {Object.entries(shelfLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+          {isOwner ? (
+            <>
+              <div className="book-detail-controls">
+                <label htmlFor="book-shelf">Shelf</label>
+                <select
+                  id="book-shelf"
+                  value={shelf}
+                  onChange={(e) => handleShelfChange(e.target.value)}
+                >
+                  {Object.entries(shelfLabels).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
 
-            <label htmlFor="book-rating">Rating</label>
-            <select
-              id="book-rating"
-              value={bookRating}
-              onChange={(e) => handleRatingChange(e.target.value)}
-            >
-              <option value="">No rating</option>
-              <option value="1">★☆☆☆☆</option>
-              <option value="2">★★☆☆☆</option>
-              <option value="3">★★★☆☆</option>
-              <option value="4">★★★★☆</option>
-              <option value="5">★★★★★</option>
-            </select>
-          </div>
+                <label htmlFor="book-rating">Rating</label>
+                <select
+                  id="book-rating"
+                  value={bookRating}
+                  onChange={(e) => handleRatingChange(e.target.value)}
+                >
+                  <option value="">No rating</option>
+                  <option value="1">★☆☆☆☆</option>
+                  <option value="2">★★☆☆☆</option>
+                  <option value="3">★★★☆☆</option>
+                  <option value="4">★★★★☆</option>
+                  <option value="5">★★★★★</option>
+                </select>
+              </div>
 
-          <button className="btn-delete" onClick={handleDelete}>
-            Delete Book
-          </button>
+              <button className="btn-delete" onClick={handleDelete}>
+                Delete Book
+              </button>
+            </>
+          ) : (
+            book.rating && (
+              <p className="book-detail-rating">
+                {"★".repeat(book.rating)}
+                {"☆".repeat(5 - book.rating)}
+              </p>
+            )
+          )}
         </div>
       </div>
 
@@ -188,36 +214,38 @@ function BookDetail() {
         )}
       </section>
 
-      <section className="add-review-section">
-        <h2>Write a Review</h2>
-        {error && <p className="form-error">{error}</p>}
-        <form className="review-form" onSubmit={handleReviewSubmit}>
-          <label htmlFor="review-rating">Rating</label>
-          <select
-            id="review-rating"
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            required
-          >
-            <option value="">Select a rating</option>
-            <option value="1">★☆☆☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="4">★★★★☆</option>
-            <option value="5">★★★★★</option>
-          </select>
+      {!isOwner && (
+        <section className="add-review-section">
+          <h2>Write a Review</h2>
+          {error && <p className="form-error">{error}</p>}
+          <form className="review-form" onSubmit={handleReviewSubmit}>
+            <label htmlFor="review-rating">Rating</label>
+            <select
+              id="review-rating"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              required
+            >
+              <option value="">Select a rating</option>
+              <option value="1">★☆☆☆☆</option>
+              <option value="2">★★☆☆☆</option>
+              <option value="3">★★★☆☆</option>
+              <option value="4">★★★★☆</option>
+              <option value="5">★★★★★</option>
+            </select>
 
-          <label htmlFor="review-text">Review</label>
-          <textarea
-            id="review-text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={4}
-          />
+            <label htmlFor="review-text">Review</label>
+            <textarea
+              id="review-text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={4}
+            />
 
-          <button type="submit">Submit Review</button>
-        </form>
-      </section>
+            <button type="submit">Submit Review</button>
+          </form>
+        </section>
+      )}
     </div>
   );
 }

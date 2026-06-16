@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5128/api";
+import { BASE_URL, getHeaders, parseError } from "./client";
 
 export interface ReviewResponse {
   id: number;
@@ -15,28 +15,13 @@ export interface AddReviewRequest {
   bookId: number;
 }
 
-function getHeaders(): Record<string, string> {
-  const stored = localStorage.getItem("user");
-  const token = stored ? JSON.parse(stored).token : null;
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return headers;
-}
-
 export async function getReviewsForBook(
   bookId: number,
 ): Promise<ReviewResponse[]> {
   const response = await fetch(`${BASE_URL}/reviews/book/${bookId}`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch reviews");
+    throw new Error(await parseError(response, "Failed to fetch reviews"));
   }
 
   return response.json();
@@ -52,7 +37,7 @@ export async function addReview(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch review");
+    throw new Error(await parseError(response, "Failed to add review"));
   }
 
   return response.json();
@@ -65,6 +50,6 @@ export async function deleteReview(id: number): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete review");
+    throw new Error(await parseError(response, "Failed to delete review"));
   }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getMyRequests, updateBorrowStatus } from "../api/borrow";
 import type { BorrowRequestResponse, BorrowStatus } from "../api/borrow";
@@ -11,20 +11,20 @@ function Requests() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const data = await getMyRequests();
-        setRequests(data);
-      } catch (err) {
-        console.error("Failed to fetch requests:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRequests();
+  const fetchRequests = useCallback(async () => {
+    try {
+      const data = await getMyRequests();
+      setRequests(data);
+    } catch (err) {
+      console.error("Failed to fetch requests:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
 
   const incoming = requests.filter((r) => r.toUserId === user?.userId);
   const outgoing = requests.filter((r) => r.fromUserId === user?.userId);
@@ -34,8 +34,8 @@ function Requests() {
     setUpdatingId(id);
 
     try {
-      const updated = await updateBorrowStatus(id, status);
-      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      await updateBorrowStatus(id, status);
+      await fetchRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update request");
     } finally {

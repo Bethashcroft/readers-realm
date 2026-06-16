@@ -1,0 +1,35 @@
+export const BASE_URL =
+  import.meta.env.VITE_API_URL ?? "http://localhost:5128/api";
+
+export function getHeaders(): Record<string, string> {
+  let token: string | null = null;
+  const stored = localStorage.getItem("user");
+  if (stored) {
+    try {
+      token = JSON.parse(stored).token ?? null;
+    } catch {
+      token = null;
+    }
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
+export async function parseError(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  const data = await response.json().catch(() => null);
+  if (!data) return fallback;
+  if (typeof data.message === "string") return data.message;
+  if (Array.isArray(data) && data[0]?.description) return data[0].description;
+  return fallback;
+}

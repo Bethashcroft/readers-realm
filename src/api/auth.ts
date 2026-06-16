@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5128/api";
+import { BASE_URL, parseError } from "./client";
 
 export interface AuthResponse {
   token: string;
@@ -18,8 +18,7 @@ export async function loginUser(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || error[0]?.description || "Login failed");
+    throw new Error(await parseError(response, "Login failed"));
   }
 
   return response.json();
@@ -38,10 +37,7 @@ export async function registerUser(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(
-      error.message || error[0]?.description || "Registration failed",
-    );
+    throw new Error(await parseError(response, "Registration failed"));
   }
 
   return response.json();

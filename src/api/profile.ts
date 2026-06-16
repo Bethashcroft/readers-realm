@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5128/api";
+import { BASE_URL, getHeaders, parseError } from "./client";
 
 export interface ProfileResponse {
   userName: string;
@@ -7,31 +7,35 @@ export interface ProfileResponse {
   joinedDate: string;
 }
 
-function getHeaders(): Record<string, string> {
-  const stored = localStorage.getItem("user");
-  const token = stored ? JSON.parse(stored).token : null;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  return headers;
+export interface UpdateProfileRequest {
+  displayName: string;
+  bio: string;
 }
 
 export async function getProfile(): Promise<ProfileResponse> {
   const response = await fetch(`${BASE_URL}/auth/profile`, {
     headers: getHeaders(),
   });
+
   if (!response.ok) {
-    throw new Error("Failed to fetch profile");
+    throw new Error(await parseError(response, "Failed to fetch profile"));
   }
+
   return response.json();
 }
 
-export interface UpdateProfileRequest {
-  displayName: string;
-  bio: string;
+export async function getUserProfile(
+  username: string,
+): Promise<ProfileResponse> {
+  const response = await fetch(`${BASE_URL}/users/${username}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, "Failed to fetch profile"));
+  }
+
+  return response.json();
 }
 
 export async function updateProfile(
@@ -44,7 +48,7 @@ export async function updateProfile(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to update profile");
+    throw new Error(await parseError(response, "Failed to update profile"));
   }
 
   return response.json();

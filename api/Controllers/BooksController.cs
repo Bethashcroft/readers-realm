@@ -24,7 +24,10 @@ public class BooksController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var books = await _context.Books.Where(b => b.UserId == userId).ToListAsync();
+        var books = await _context
+            .Books.Where(b => b.UserId == userId)
+            .Select(b => ToResponse(b))
+            .ToListAsync();
 
         return Ok(books);
     }
@@ -35,9 +38,23 @@ public class BooksController : ControllerBase
     {
         var books = await _context
             .Books.Where(b => b.Shelf == "available-to-borrow" || b.Shelf == "for-sale")
+            .Select(b => ToResponse(b))
             .ToListAsync();
 
         return Ok(books);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetBook(int id)
+    {
+        var book = await _context.Books.FindAsync(id);
+
+        if (book == null)
+        {
+            return NotFound(new { message = "Book not found" });
+        }
+
+        return Ok(ToResponse(book));
     }
 
     [HttpPost]
@@ -58,7 +75,7 @@ public class BooksController : ControllerBase
         _context.Books.Add(book);
         await _context.SaveChangesAsync();
 
-        return Ok(book);
+        return Ok(ToResponse(book));
     }
 
     [HttpPut("{id}")]
@@ -70,7 +87,7 @@ public class BooksController : ControllerBase
 
         if (book == null || book.UserId != userId)
         {
-            return NotFound();
+            return NotFound(new { message = "Book not found" });
         }
 
         book.Title = request.Title;
@@ -81,7 +98,7 @@ public class BooksController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok(book);
+        return Ok(ToResponse(book));
     }
 
     [HttpDelete("{id}")]
@@ -92,7 +109,7 @@ public class BooksController : ControllerBase
 
         if (book == null || book.UserId != userId)
         {
-            return NotFound();
+            return NotFound(new { message = "Book not found" });
         }
 
         _context.Books.Remove(book);
@@ -101,6 +118,18 @@ public class BooksController : ControllerBase
 
         return Ok();
     }
+
+    private static BookResponse ToResponse(Book b) =>
+        new()
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Author = b.Author,
+            CoverUrl = b.CoverUrl,
+            Shelf = b.Shelf,
+            Rating = b.Rating,
+            UserId = b.UserId,
+        };
 }
 
 public class AddBookRequest
@@ -110,4 +139,15 @@ public class AddBookRequest
     public string CoverUrl { get; set; } = string.Empty;
     public string Shelf { get; set; } = string.Empty;
     public int? Rating { get; set; }
+}
+
+public class BookResponse
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public string CoverUrl { get; set; } = string.Empty;
+    public string Shelf { get; set; } = string.Empty;
+    public int? Rating { get; set; }
+    public string UserId { get; set; } = string.Empty;
 }

@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useBooks } from "../context/BookContext";
-import { getProfile, updateProfile } from "../api/profile";
+import { useAuth } from "../context/AuthContext";
+import { getUserProfile, updateProfile } from "../api/profile";
 import type { ProfileResponse } from "../api/profile";
+import { getUserBooks } from "../api/books";
+import type { BookResponse } from "../api/books";
 import BookCard from "../components/BookCard";
 import "../styles/forms.css";
 import "./Profile.css";
 
 function Profile() {
   const { username } = useParams();
-  const { books } = useBooks();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [books, setBooks] = useState<BookResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -18,21 +21,27 @@ function Profile() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!username) return;
+
     const fetchProfile = async () => {
+      setLoading(true);
       try {
-        const data = await getProfile();
+        const data = await getUserProfile(username);
         setProfile(data);
         setDisplayName(data.displayName);
         setBio(data.bio);
+        const userBooks = await getUserBooks(username);
+        setBooks(userBooks);
       } catch (err) {
         console.error("Failed to fetch profile:", err);
+        setProfile(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [username]);
 
   const handleSave = async () => {
     setError("");
@@ -53,6 +62,8 @@ function Profile() {
   if (!profile) {
     return <p>Profile not found</p>;
   }
+
+  const isOwnProfile = user?.userName === profile.userName;
 
   return (
     <div className="profile">
@@ -95,14 +106,16 @@ function Profile() {
           ) : (
             <>
               <h1>{profile.displayName}</h1>
-              <p className="profile-username">@{username}</p>
+              <p className="profile-username">@{profile.userName}</p>
               <p className="profile-bio">{profile.bio || "No bio yet"}</p>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setEditing(true)}
-              >
-                Edit Profile
-              </button>
+              {isOwnProfile && (
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit Profile
+                </button>
+              )}
             </>
           )}
         </div>
@@ -121,7 +134,10 @@ function Profile() {
       </div>
 
       <section className="profile-books">
-        <h2>My Books ({books.length})</h2>
+        <h2>
+          {isOwnProfile ? "My Books" : `${profile.displayName}'s Books`} (
+          {books.length})
+        </h2>
         <div className="book-grid">
           {books.map((book) => (
             <BookCard key={book.id} book={book} />

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5128/api";
+import { BASE_URL, getHeaders, parseError } from "./client";
 
 export type BorrowStatus = "pending" | "accepted" | "declined";
 
@@ -18,21 +18,6 @@ export interface CreateBorrowRequest {
   message: string;
 }
 
-function getHeaders(): Record<string, string> {
-  const stored = localStorage.getItem("user");
-  const token = stored ? JSON.parse(stored).token : null;
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return headers;
-}
-
 export async function createBorrowRequest(
   request: CreateBorrowRequest,
 ): Promise<BorrowRequestResponse> {
@@ -43,8 +28,7 @@ export async function createBorrowRequest(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    throw new Error(error?.message || "Failed to send borrow request");
+    throw new Error(await parseError(response, "Failed to send borrow request"));
   }
 
   return response.json();
@@ -56,7 +40,7 @@ export async function getMyRequests(): Promise<BorrowRequestResponse[]> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch borrow requests");
+    throw new Error(await parseError(response, "Failed to fetch borrow requests"));
   }
 
   return response.json();
@@ -73,7 +57,7 @@ export async function updateBorrowStatus(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to update borrow request");
+    throw new Error(await parseError(response, "Failed to update borrow request"));
   }
 
   return response.json();

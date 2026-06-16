@@ -122,13 +122,18 @@ public class BorrowRequestsController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        if (request.Status != "accepted" && request.Status != "declined")
+        {
+            return BadRequest(new { message = "Status must be 'accepted' or 'declined'" });
+        }
+
         var borrowRequest = await _context
             .BorrowRequests.Include(r => r.Book)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (borrowRequest == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Request not found" });
         }
 
         if (borrowRequest.ToUserId != userId)
@@ -137,6 +142,25 @@ public class BorrowRequestsController : ControllerBase
         }
 
         borrowRequest.Status = request.Status;
+
+        if (request.Status == "accepted")
+        {
+            borrowRequest.Book.Shelf = "lent-out";
+
+            var competing = await _context
+                .BorrowRequests.Where(r =>
+                    r.BookId == borrowRequest.BookId
+                    && r.Id != borrowRequest.Id
+                    && r.Status == "pending"
+                )
+                .ToListAsync();
+
+            foreach (var other in competing)
+            {
+                other.Status = "declined";
+            }
+        }
+
         await _context.SaveChangesAsync();
 
         return Ok(

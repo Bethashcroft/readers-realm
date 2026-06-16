@@ -20,8 +20,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthResponse | null>(() => {
     const stored = localStorage.getItem("user");
     if (!stored) return null;
-    const parsed = JSON.parse(stored);
-    return parsed.userId ? parsed : null;
+    try {
+      const parsed = JSON.parse(stored);
+      return parsed.userId ? parsed : null;
+    } catch {
+      return null;
+    }
   });
 
   const login = async (email: string, password: string) => {
