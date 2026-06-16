@@ -7,6 +7,7 @@ export interface BorrowRequestResponse {
   bookId: number;
   bookTitle: string;
   fromUserId: string;
+  fromUserName: string;
   toUserId: string;
   status: BorrowStatus;
   message: string;

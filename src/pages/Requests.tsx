@@ -68,6 +68,7 @@ function Requests() {
           <div key={req.id} className="request-card">
             <div className="request-details">
               <h3>{req.bookTitle}</h3>
+              <p className="request-from">Requested by {req.fromUserName}</p>
               {req.message && (
                 <p className="request-message">"{req.message}"</p>
               )}

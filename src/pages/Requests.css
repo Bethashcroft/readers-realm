@@ -18,6 +18,11 @@
   margin-bottom: 0.75rem;
 }
 
+.request-from {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
 .request-message {
   color: #64748b;
   font-style: italic;

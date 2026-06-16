@@ -56,6 +56,8 @@ public class BorrowRequestsController : ControllerBase
         _context.BorrowRequests.Add(borrowRequest);
         await _context.SaveChangesAsync();
 
+        var fromUser = await _context.Users.FindAsync(fromUserId);
+
         return Ok(
             new BorrowRequestResponse
             {
@@ -63,6 +65,7 @@ public class BorrowRequestsController : ControllerBase
                 BookId = borrowRequest.BookId,
                 BookTitle = book.Title,
                 FromUserId = borrowRequest.FromUserId,
+                FromUserName = fromUser?.DisplayName ?? "Unknown",
                 ToUserId = borrowRequest.ToUserId,
                 Status = borrowRequest.Status,
                 Message = borrowRequest.Message,
@@ -83,6 +86,7 @@ public class BorrowRequestsController : ControllerBase
         public int BookId { get; set; }
         public string BookTitle { get; set; } = string.Empty;
         public string FromUserId { get; set; } = string.Empty;
+        public string FromUserName { get; set; } = string.Empty;
         public string ToUserId { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
@@ -103,6 +107,7 @@ public class BorrowRequestsController : ControllerBase
                 BookId = r.BookId,
                 BookTitle = r.Book.Title,
                 FromUserId = r.FromUserId,
+                FromUserName = r.FromUser.DisplayName,
                 ToUserId = r.ToUserId,
                 Status = r.Status,
                 Message = r.Message,
@@ -129,6 +134,7 @@ public class BorrowRequestsController : ControllerBase
 
         var borrowRequest = await _context
             .BorrowRequests.Include(r => r.Book)
+            .Include(r => r.FromUser)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (borrowRequest == null)
@@ -170,6 +176,7 @@ public class BorrowRequestsController : ControllerBase
                 BookId = borrowRequest.BookId,
                 BookTitle = borrowRequest.Book.Title,
                 FromUserId = borrowRequest.FromUserId,
+                FromUserName = borrowRequest.FromUser.DisplayName,
                 ToUserId = borrowRequest.ToUserId,
                 Status = borrowRequest.Status,
                 Message = borrowRequest.Message,
