@@ -79,4 +79,52 @@ public class BorrowTests : IDisposable
         );
         Assert.Equal("lent-out", bookAfter!.Shelf);
     }
+
+        [Fact]
+    public async Task RequestingTheSameBookTwice_ReturnsBadRequest()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Popular Book");
+
+        var borrowerClient = _factory.CreateClient();
+        var borrower = await borrowerClient.RegisterAsync("borrower");
+        borrowerClient.Authenticate(borrower.Token);
+
+        await borrowerClient.RequestBookAsync(book.Id);
+
+        var second = await borrowerClient.PostAsJsonAsync(
+            "/api/borrowrequests",
+            new { bookId = book.Id, message = "again" }
+        );
+
+        Assert.Equal(HttpStatusCode.BadRequest, second.StatusCode);
+        var body = await second.Content.ReadFromJsonAsync<MessageResult>();
+        Assert.Equal("You already have a pending request for this book", body!.Message);
+    }
+
+        [Fact]
+    public async Task UpdatingRequestWithInvalidStatus_ReturnsBadRequest()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Some Book");
+
+        var borrowerClient = _factory.CreateClient();
+        var borrower = await borrowerClient.RegisterAsync("borrower");
+        borrowerClient.Authenticate(borrower.Token);
+        var req = await borrowerClient.RequestBookAsync(book.Id);
+
+        var response = await ownerClient.PutAsJsonAsync(
+            $"/api/borrowrequests/{req.Id}",
+            new { status = "banana" }
+        );
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<MessageResult>();
+        Assert.Equal("Status must be 'accepted' or 'declined'", body!.Message);
+    }
+
 }

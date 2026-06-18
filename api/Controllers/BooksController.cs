@@ -85,10 +85,16 @@ public class BooksController : ControllerBase
 
         var book = await _context.Books.FindAsync(id);
 
-        if (book == null || book.UserId != userId)
+        if (book == null)
         {
             return NotFound(new { message = "Book not found" });
         }
+
+        if (book.UserId != userId)
+        {
+            return Forbid();
+        }
+
 
         book.Title = request.Title;
         book.Author = request.Author;
@@ -107,10 +113,16 @@ public class BooksController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var book = await _context.Books.FindAsync(id);
 
-        if (book == null || book.UserId != userId)
+        if (book == null)
         {
             return NotFound(new { message = "Book not found" });
         }
+
+        if (book.UserId != userId)
+        {
+            return Forbid();
+        }
+
 
         _context.Books.Remove(book);
 
