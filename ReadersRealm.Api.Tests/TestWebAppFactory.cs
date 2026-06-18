@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ReadersRealm.Api.Data;
 
 namespace ReadersRealm.Api.Tests;
@@ -22,6 +23,11 @@ public class TestWebAppFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+        });
+
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(d =>
