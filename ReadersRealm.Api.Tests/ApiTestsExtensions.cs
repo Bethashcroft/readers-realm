@@ -15,6 +15,8 @@ public record BookResult(
     string UserId
 );
 
+public record BorrowResult(int Id, int BookId, string Status, string FromUserName);
+
 public static class ApiTestExtensions
 {
     public static async Task<AuthResult> RegisterAsync(this HttpClient client, string userName)
@@ -62,4 +64,19 @@ public static class ApiTestExtensions
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<BookResult>())!;
     }
+
+        public static async Task<BorrowResult> RequestBookAsync(
+        this HttpClient client,
+        int bookId,
+        string message = ""
+    )
+    {
+        var response = await client.PostAsJsonAsync(
+            "/api/borrowrequests",
+            new { bookId, message }
+        );
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<BorrowResult>())!;
+    }
+
 }
