@@ -17,6 +17,15 @@ public record BookResult(
 
 public record BorrowResult(int Id, int BookId, string Status, string FromUserName);
 
+public record ReviewResult(
+    int Id,
+    int Rating,
+    string Text,
+    int BookId,
+    string UserId,
+    string UserName
+);
+
 public static class ApiTestExtensions
 {
     public static async Task<AuthResult> RegisterAsync(this HttpClient client, string userName)
@@ -79,4 +88,18 @@ public static class ApiTestExtensions
         return (await response.Content.ReadFromJsonAsync<BorrowResult>())!;
     }
 
+    public static async Task<ReviewResult> AddReviewAsync(
+        this HttpClient client,
+        int bookId,
+        int rating = 4,
+        string text = "A fine read"
+    )
+    {
+        var response = await client.PostAsJsonAsync(
+            "/api/reviews",
+            new { rating, text, bookId }
+        );
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<ReviewResult>())!;
+    }
 }

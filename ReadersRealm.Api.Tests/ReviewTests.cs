@@ -85,5 +85,48 @@ public class ReviewTests : IDisposable
         Assert.Equal("You have already reviewed this book", body!.Message);
     }
 
+    [Fact]
+    public async Task DeletingYourOwnReview_RemovesIt()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Reviewed Book");
+
+        var reader = await _client.RegisterAsync("reader");
+        _client.Authenticate(reader.Token);
+        var review = await _client.AddReviewAsync(book.Id);
+
+        var deleteResponse = await _client.DeleteAsync($"/api/reviews/{review.Id}");
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+        var remaining = await _client.GetFromJsonAsync<ReviewResult[]>(
+            $"/api/reviews/book/{book.Id}"
+        );
+        Assert.Empty(remaining!);
+    }
+
+    [Fact]
+    public async Task DeletingSomeoneElsesReview_ReturnsNotFound()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Reviewed Book");
+
+        var reader = await _client.RegisterAsync("reader");
+        _client.Authenticate(reader.Token);
+        var review = await _client.AddReviewAsync(book.Id);
+
+        var intruderClient = _factory.CreateClient();
+        var intruder = await intruderClient.RegisterAsync("intruder");
+        intruderClient.Authenticate(intruder.Token);
+
+        var deleteResponse = await intruderClient.DeleteAsync(
+            $"/api/reviews/{review.Id}"
+        );
+        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+    }
+
     private record MessageResult(string Message);
 }

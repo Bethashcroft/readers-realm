@@ -127,4 +127,46 @@ public class BorrowTests : IDisposable
         Assert.Equal("Status must be 'accepted' or 'declined'", body!.Message);
     }
 
+    [Fact]
+    public async Task WithdrawingYourOwnRequest_RemovesIt()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Wanted Book");
+
+        var borrowerClient = _factory.CreateClient();
+        var borrower = await borrowerClient.RegisterAsync("borrower");
+        borrowerClient.Authenticate(borrower.Token);
+        var req = await borrowerClient.RequestBookAsync(book.Id);
+
+        var deleteResponse = await borrowerClient.DeleteAsync(
+            $"/api/borrowrequests/{req.Id}"
+        );
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+        var remaining = await borrowerClient.GetFromJsonAsync<BorrowResult[]>(
+            "/api/borrowrequests"
+        );
+        Assert.DoesNotContain(remaining!, r => r.Id == req.Id);
+    }
+
+    [Fact]
+    public async Task WithdrawingSomeoneElsesRequest_ReturnsForbidden()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Wanted Book");
+
+        var borrowerClient = _factory.CreateClient();
+        var borrower = await borrowerClient.RegisterAsync("borrower");
+        borrowerClient.Authenticate(borrower.Token);
+        var req = await borrowerClient.RequestBookAsync(book.Id);
+
+        var deleteResponse = await ownerClient.DeleteAsync(
+            $"/api/borrowrequests/{req.Id}"
+        );
+        Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
+    }
 }
