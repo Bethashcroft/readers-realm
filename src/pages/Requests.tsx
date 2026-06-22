@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getMyRequests, updateBorrowStatus } from "../api/borrow";
+import {
+  getMyRequests,
+  updateBorrowStatus,
+  withdrawBorrowRequest,
+} from "../api/borrow";
 import type { BorrowRequestResponse, BorrowStatus } from "../api/borrow";
 import "./Requests.css";
 
@@ -38,6 +42,22 @@ function Requests() {
       await fetchRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update request");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleWithdraw = async (id: number) => {
+    setError("");
+    setUpdatingId(id);
+
+    try {
+      await withdrawBorrowRequest(id);
+      await fetchRequests();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to withdraw request",
+      );
     } finally {
       setUpdatingId(null);
     }
@@ -112,7 +132,18 @@ function Requests() {
               )}
               <p className="request-date">{formatDate(req.date)}</p>
             </div>
-            <span className={`status-badge ${req.status}`}>{req.status}</span>
+            <div className="request-actions">
+              <span className={`status-badge ${req.status}`}>{req.status}</span>
+              {req.status === "pending" && (
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleWithdraw(req.id)}
+                  disabled={updatingId === req.id}
+                >
+                  Withdraw
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </section>

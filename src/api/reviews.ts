@@ -6,6 +6,7 @@ export interface ReviewResponse {
   text: string;
   date: string;
   bookId: number;
+  userId: string;
   userName: string;
 }
 

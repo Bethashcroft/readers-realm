@@ -33,6 +33,7 @@ public class ReviewsController : ControllerBase
                 Text = r.Text,
                 Date = r.Date,
                 BookId = r.BookId,
+                UserId = r.UserId,
                 UserName = r.User.DisplayName,
             })
             .ToListAsync();
@@ -93,6 +94,7 @@ public class ReviewsController : ControllerBase
                 Text = review.Text,
                 Date = review.Date,
                 BookId = review.BookId,
+                UserId = review.UserId,
                 UserName = user?.DisplayName ?? "Unknown",
             }
         );
@@ -131,5 +133,6 @@ public class ReviewResponse
     public string Text { get; set; } = string.Empty;
     public DateTime Date { get; set; }
     public int BookId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
 }

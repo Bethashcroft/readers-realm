@@ -119,6 +119,28 @@ public class BorrowRequestsController : ControllerBase
         return Ok(requests);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRequest(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var borrowRequest = await _context.BorrowRequests.FindAsync(id);
+
+        if (borrowRequest == null)
+        {
+            return NotFound(new { message = "Request not found" });
+        }
+
+        if (borrowRequest.FromUserId != userId)
+        {
+            return Forbid();
+        }
+
+        _context.BorrowRequests.Remove(borrowRequest);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStatus(
         int id,

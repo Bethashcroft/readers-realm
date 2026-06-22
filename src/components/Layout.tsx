@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyRequests } from "../api/borrow";
 import "./Layout.css";
@@ -44,26 +44,28 @@ function Layout() {
         </Link>
         <ul className="navbar-links">
           <li>
-            <Link to="/shelves">My Shelves</Link>
+            <NavLink to="/shelves">My Shelves</NavLink>
           </li>
           <li>
-            <Link to="/add-book">Add Book</Link>
+            <NavLink to="/add-book">Add Book</NavLink>
           </li>
           <li>
-            <Link to="/browse">Browse</Link>
+            <NavLink to="/browse">Browse</NavLink>
           </li>
           {user ? (
             <>
               <li>
-                <Link to="/requests">
+                <NavLink to="/requests">
                   Requests
                   {pendingCount > 0 && (
                     <span className="nav-badge">{pendingCount}</span>
                   )}
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to={`/profile/${user.userName}`}>{user.displayName}</Link>
+                <NavLink to={`/profile/${user.userName}`}>
+                  {user.displayName}
+                </NavLink>
               </li>
               <li>
                 <button className="nav-logout" onClick={handleLogout}>
@@ -74,10 +76,10 @@ function Layout() {
           ) : (
             <>
               <li>
-                <Link to="/login">Login</Link>
+                <NavLink to="/login">Login</NavLink>
               </li>
               <li>
-                <Link to="/register">Register</Link>
+                <NavLink to="/register">Register</NavLink>
               </li>
             </>
           )}

@@ -4,7 +4,11 @@ import { useBooks } from "../context/BookContext";
 import { useAuth } from "../context/AuthContext";
 import { getBook } from "../api/books";
 import type { BookResponse } from "../api/books";
-import { getReviewsForBook, addReview as addReviewApi } from "../api/reviews";
+import {
+  getReviewsForBook,
+  addReview as addReviewApi,
+  deleteReview,
+} from "../api/reviews";
 import type { ReviewResponse } from "../api/reviews";
 import type { ShelfType } from "../types/book";
 import "./BookDetail.css";
@@ -127,6 +131,15 @@ function BookDetail() {
     }
   };
 
+  const handleDeleteReview = async (reviewId: number) => {
+    try {
+      await deleteReview(reviewId);
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    } catch (err) {
+      console.error("Failed to delete review:", err);
+    }
+  };
+
   return (
     <div className="book-detail">
       <div className="book-detail-header">
@@ -206,6 +219,14 @@ function BookDetail() {
               </span>
             </div>
             <p className="review-text">{review.text}</p>
+            {user?.userId === review.userId && (
+              <button
+                className="review-delete"
+                onClick={() => handleDeleteReview(review.id)}
+              >
+                Delete
+              </button>
+            )}
           </div>
         ))}
 
