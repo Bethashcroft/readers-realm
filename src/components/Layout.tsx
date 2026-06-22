@@ -1,10 +1,35 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getMyRequests } from "../api/borrow";
 import "./Layout.css";
 
 function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setPendingCount(0);
+      return;
+    }
+
+    const fetchCount = async () => {
+      try {
+        const requests = await getMyRequests();
+        const incomingPending = requests.filter(
+          (r) => r.toUserId === user.userId && r.status === "pending",
+        );
+        setPendingCount(incomingPending.length);
+      } catch (err) {
+        console.error("Failed to load request count:", err);
+      }
+    };
+
+    fetchCount();
+  }, [user, location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -30,7 +55,12 @@ function Layout() {
           {user ? (
             <>
               <li>
-                <Link to="/requests">Requests</Link>
+                <Link to="/requests">
+                  Requests
+                  {pendingCount > 0 && (
+                    <span className="nav-badge">{pendingCount}</span>
+                  )}
+                </Link>
               </li>
               <li>
                 <Link to={`/profile/${user.userName}`}>{user.displayName}</Link>

@@ -14,6 +14,10 @@ function Browse() {
   const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<
+    "all" | "available-to-borrow" | "for-sale"
+  >("all");
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -46,6 +50,15 @@ function Browse() {
     }
   };
 
+  const filteredBooks = books.filter((book) => {
+    const query = search.toLowerCase();
+    const matchesSearch =
+      book.title.toLowerCase().includes(query) ||
+      book.author.toLowerCase().includes(query);
+    const matchesFilter = filter === "all" || book.shelf === filter;
+    return matchesSearch && matchesFilter;
+  });
+
   if (loading) {
     return <p>Loading books...</p>;
   }
@@ -60,11 +73,48 @@ function Browse() {
         For your safety, always arrange exchanges through in-app messaging.
         Never share personal contact details.
       </div>
-      {books.length === 0 && (
+
+      <div className="browse-controls">
+        <input
+          type="text"
+          className="browse-search"
+          placeholder="Search by title or author"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <div className="browse-filters">
+          <button
+            className={`browse-filter ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
+          >
+            All
+          </button>
+          <button
+            className={`browse-filter ${
+              filter === "available-to-borrow" ? "active" : ""
+            }`}
+            onClick={() => setFilter("available-to-borrow")}
+          >
+            To Borrow
+          </button>
+          <button
+            className={`browse-filter ${filter === "for-sale" ? "active" : ""}`}
+            onClick={() => setFilter("for-sale")}
+          >
+            For Sale
+          </button>
+        </div>
+      </div>
+
+      {books.length === 0 ? (
         <p className="empty-browse">No books available nearby right now.</p>
+      ) : (
+        filteredBooks.length === 0 && (
+          <p className="empty-browse">No books match your search.</p>
+        )
       )}
       <div className="browse-list">
-        {books.map((book) => (
+        {filteredBooks.map((book) => (
           <div key={book.id} className="browse-card">
             <img
               className="browse-cover"
