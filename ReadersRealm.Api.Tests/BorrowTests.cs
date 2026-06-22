@@ -169,4 +169,29 @@ public class BorrowTests : IDisposable
         );
         Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
     }
+
+    [Fact]
+    public async Task WithdrawingAnAcceptedRequest_ReturnsBadRequest()
+    {
+        var ownerClient = _factory.CreateClient();
+        var owner = await ownerClient.RegisterAsync("owner");
+        ownerClient.Authenticate(owner.Token);
+        var book = await ownerClient.AddBookAsync("Wanted Book");
+
+        var borrowerClient = _factory.CreateClient();
+        var borrower = await borrowerClient.RegisterAsync("borrower");
+        borrowerClient.Authenticate(borrower.Token);
+        var req = await borrowerClient.RequestBookAsync(book.Id);
+
+        var accept = await ownerClient.PutAsJsonAsync(
+            $"/api/borrowrequests/{req.Id}",
+            new { status = "accepted" }
+        );
+        accept.EnsureSuccessStatusCode();
+
+        var deleteResponse = await borrowerClient.DeleteAsync(
+            $"/api/borrowrequests/{req.Id}"
+        );
+        Assert.Equal(HttpStatusCode.BadRequest, deleteResponse.StatusCode);
+    }
 }

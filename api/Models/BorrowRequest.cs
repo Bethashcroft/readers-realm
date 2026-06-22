@@ -1,9 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ReadersRealm.Api.Models;
 
 public class BorrowRequest
 {
     public int Id { get; set; }
+
+    [MaxLength(20)]
     public string Status { get; set; } = "pending";
+
+    [MaxLength(1000)]
     public string Message { get; set; } = string.Empty;
     public DateTime Date { get; set; } = DateTime.UtcNow;
 

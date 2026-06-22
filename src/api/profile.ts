@@ -12,18 +12,6 @@ export interface UpdateProfileRequest {
   bio: string;
 }
 
-export async function getProfile(): Promise<ProfileResponse> {
-  const response = await fetch(`${BASE_URL}/auth/profile`, {
-    headers: getHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, "Failed to fetch profile"));
-  }
-
-  return response.json();
-}
-
 export async function getUserProfile(
   username: string,
 ): Promise<ProfileResponse> {

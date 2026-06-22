@@ -28,7 +28,11 @@ builder
     .AddDefaultTokenProviders();
 
 // JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"]!;
+var jwtKey =
+    builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException(
+        "Jwt:Key is not configured. Set it via user-secrets (development) or an environment variable (production)."
+    );
 builder
     .Services.AddAuthentication(options =>
     {

@@ -95,7 +95,6 @@ public class BooksController : ControllerBase
             return Forbid();
         }
 
-
         book.Title = request.Title;
         book.Author = request.Author;
         book.CoverUrl = request.CoverUrl;
@@ -122,7 +121,6 @@ public class BooksController : ControllerBase
         {
             return Forbid();
         }
-
 
         _context.Books.Remove(book);
 

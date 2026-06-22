@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -52,8 +53,16 @@ public class UsersController : ControllerBase
             return NotFound(new { message = "User not found" });
         }
 
-        var books = await _context
-            .Books.Where(b => b.UserId == user.Id)
+        var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var query = _context.Books.Where(b => b.UserId == user.Id);
+
+        if (user.Id != requesterId)
+        {
+            query = query.Where(b => b.Shelf != "tbr" && b.Shelf != "dnf");
+        }
+
+        var books = await query
             .Select(b => new BookResponse
             {
                 Id = b.Id,

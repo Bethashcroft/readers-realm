@@ -135,6 +135,11 @@ public class BorrowRequestsController : ControllerBase
             return Forbid();
         }
 
+        if (borrowRequest.Status != "pending")
+        {
+            return BadRequest(new { message = "Only pending requests can be withdrawn" });
+        }
+
         _context.BorrowRequests.Remove(borrowRequest);
         await _context.SaveChangesAsync();
 

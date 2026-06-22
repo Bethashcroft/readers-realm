@@ -1,10 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace ReadersRealm.Api.Models;
 
 public class AppUser : IdentityUser
 {
+    [MaxLength(100)]
     public string DisplayName { get; set; } = string.Empty;
+
+    [MaxLength(500)]
     public string Bio { get; set; } = string.Empty;
     public DateTime JoinedDate { get; set; } = DateTime.UtcNow;
 }
