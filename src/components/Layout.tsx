@@ -43,17 +43,17 @@ function Layout() {
           Readers Realm
         </Link>
         <ul className="navbar-links">
-          <li>
-            <NavLink to="/shelves">My Shelves</NavLink>
-          </li>
-          <li>
-            <NavLink to="/add-book">Add Book</NavLink>
-          </li>
-          <li>
-            <NavLink to="/browse">Browse</NavLink>
-          </li>
           {user ? (
             <>
+              <li>
+                <NavLink to="/shelves">My Shelves</NavLink>
+              </li>
+              <li>
+                <NavLink to="/add-book">Add Book</NavLink>
+              </li>
+              <li>
+                <NavLink to="/browse">Browse</NavLink>
+              </li>
               <li>
                 <NavLink to="/requests">
                   Requests

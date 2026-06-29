@@ -127,9 +127,7 @@ function Browse() {
               <span className={`browse-badge ${book.shelf}`}>
                 {book.shelf === "for-sale" ? "For Sale" : "Available to Borrow"}
               </span>
-              {!user ? (
-                <p className="login-prompt">Log in to request this book</p>
-              ) : book.userId === user.userId ? (
+              {book.userId === user?.userId ? (
                 <p className="own-book-label">Your book</p>
               ) : sentRequests.has(book.id) ? (
                 <p className="request-sent">Request sent!</p>

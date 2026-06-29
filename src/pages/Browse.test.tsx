@@ -10,7 +10,14 @@ vi.mock("../api/books", () => ({
 }));
 
 vi.mock("../context/AuthContext", () => ({
-  useAuth: () => ({ user: null }),
+  useAuth: () => ({
+    user: {
+      token: "t",
+      userId: "viewer",
+      userName: "viewer",
+      displayName: "Viewer",
+    },
+  }),
 }));
 
 const books: BookResponse[] = [

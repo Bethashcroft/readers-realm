@@ -55,7 +55,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/browse" element={<Browse />} />
+              <Route
+                path="/browse"
+                element={
+                  <ProtectedRoute>
+                    <Browse />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/requests"
                 element={
