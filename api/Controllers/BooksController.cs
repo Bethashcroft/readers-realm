@@ -38,7 +38,17 @@ public class BooksController : ControllerBase
     {
         var books = await _context
             .Books.Where(b => b.Shelf == "available-to-borrow" || b.Shelf == "for-sale")
-            .Select(b => ToResponse(b))
+            .Select(b => new BookResponse
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                CoverUrl = b.CoverUrl,
+                Shelf = b.Shelf,
+                Rating = b.Rating,
+                UserId = b.UserId,
+                SellerVintedUrl = b.User.VintedUrl,
+            })
             .ToListAsync();
 
         return Ok(books);
@@ -47,14 +57,18 @@ public class BooksController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBook(int id)
     {
-        var book = await _context.Books.FindAsync(id);
+        var book = await _context
+            .Books.Include(b => b.User)
+            .FirstOrDefaultAsync(b => b.Id == id);
 
         if (book == null)
         {
             return NotFound(new { message = "Book not found" });
         }
 
-        return Ok(ToResponse(book));
+        var response = ToResponse(book);
+        response.SellerVintedUrl = book.User?.VintedUrl ?? string.Empty;
+        return Ok(response);
     }
 
     [HttpPost]
@@ -160,4 +174,5 @@ public class BookResponse
     public string Shelf { get; set; } = string.Empty;
     public int? Rating { get; set; }
     public string UserId { get; set; } = string.Empty;
+    public string SellerVintedUrl { get; set; } = string.Empty;
 }

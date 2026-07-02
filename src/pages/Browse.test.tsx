@@ -29,6 +29,7 @@ const books: BookResponse[] = [
     shelf: "available-to-borrow",
     rating: null,
     userId: "u1",
+    sellerVintedUrl: "",
   },
   {
     id: 2,
@@ -38,6 +39,7 @@ const books: BookResponse[] = [
     shelf: "for-sale",
     rating: null,
     userId: "u2",
+    sellerVintedUrl: "https://www.vinted.co.uk/member/dune-seller",
   },
 ];
 

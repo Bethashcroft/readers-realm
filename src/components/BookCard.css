@@ -6,14 +6,18 @@ a.book-card {
 .book-card {
   display: flex;
   flex-direction: column;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .book-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.35);
 }
 
 .book-cover {

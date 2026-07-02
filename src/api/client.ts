@@ -27,7 +27,15 @@ export async function parseError(
   response: Response,
   fallback: string,
 ): Promise<string> {
-  if (response.status === 401 && localStorage.getItem("user")) {
+  const isAuthEndpoint =
+    response.url.endsWith("/auth/login") ||
+    response.url.endsWith("/auth/register");
+
+  if (
+    response.status === 401 &&
+    !isAuthEndpoint &&
+    localStorage.getItem("user")
+  ) {
     localStorage.removeItem("user");
     window.location.href = "/login";
   }

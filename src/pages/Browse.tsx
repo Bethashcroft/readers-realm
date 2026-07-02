@@ -127,7 +127,36 @@ function Browse() {
               <span className={`browse-badge ${book.shelf}`}>
                 {book.shelf === "for-sale" ? "For Sale" : "Available to Borrow"}
               </span>
-              {book.userId === user?.userId ? (
+              {book.shelf === "for-sale" ? (
+                <div className="for-sale-actions">
+                  {book.sellerVintedUrl ? (
+                    <a
+                      className="btn-vinted"
+                      href={book.sellerVintedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        className="vinted-logo"
+                        src="/vinted-logo.png"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      View on Vinted
+                    </a>
+                  ) : (
+                    <p className="no-vinted">
+                      {book.userId === user?.userId
+                        ? "Add your Vinted link in your profile to show a buy button here."
+                        : "This seller hasn't linked their Vinted yet."}
+                    </p>
+                  )}
+                  <p className="sale-disclaimer">
+                    The Readers Universe isn't involved in sales — purchases are
+                    made on Vinted, at your own risk.
+                  </p>
+                </div>
+              ) : book.userId === user?.userId ? (
                 <p className="own-book-label">Your book</p>
               ) : sentRequests.has(book.id) ? (
                 <p className="request-sent">Request sent!</p>
@@ -164,9 +193,7 @@ function Browse() {
                   className="btn btn-primary"
                   onClick={() => setRequestingBookId(book.id)}
                 >
-                  {book.shelf === "for-sale"
-                    ? "Request to Buy"
-                    : "Request to Borrow"}
+                  Request to Borrow
                 </button>
               )}
             </div>

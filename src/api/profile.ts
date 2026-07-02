@@ -4,12 +4,14 @@ export interface ProfileResponse {
   userName: string;
   displayName: string;
   bio: string;
+  vintedUrl: string;
   joinedDate: string;
 }
 
 export interface UpdateProfileRequest {
   displayName: string;
   bio: string;
+  vintedUrl: string;
 }
 
 export async function getUserProfile(

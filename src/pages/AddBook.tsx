@@ -23,7 +23,7 @@ function AddBook() {
       await addBook({
         title,
         author,
-        coverUrl: `https://placehold.co/200x300/e2e8f0/64748b?text=${encodeURIComponent(title)}`,
+        coverUrl: `https://placehold.co/200x300/1a1430/a9a3cc?text=${encodeURIComponent(title)}`,
         shelf,
         rating: rating ? Number(rating) : null,
       });

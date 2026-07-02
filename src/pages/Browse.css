@@ -16,13 +16,14 @@
 }
 
 .browse-banner {
-  background-color: #fef3c7;
-  border: 1px solid #f59e0b;
-  color: #92400e;
+  background-color: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.32);
+  color: #d8cdff;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   line-height: 1.5;
+  backdrop-filter: blur(8px);
 }
 
 .empty-browse {
@@ -86,13 +87,15 @@
 }
 
 .browse-badge.available-to-borrow {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .browse-badge.for-sale {
-  background-color: #e0e7ff;
-  color: #3730a3;
+  background-color: rgba(99, 102, 241, 0.18);
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.32);
 }
 
 .request-form {
@@ -122,41 +125,10 @@
 }
 
 .request-sent {
-  color: #059669;
+  color: #86efac;
   font-weight: 600;
   font-size: 14px;
   margin-top: 8px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.2s;
-}
-
-.btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.btn-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-border);
 }
 
 @media (max-width: 768px) {
@@ -168,9 +140,64 @@
 }
 
 .own-book-label {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-style: italic;
   font-size: 0.9rem;
+}
+
+.for-sale-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-vinted {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background-color: rgba(0, 119, 130, 0.16);
+  border: 1px solid rgba(9, 177, 186, 0.55);
+  color: #7fe3e0;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.btn-vinted:hover {
+  background-color: rgba(0, 119, 130, 0.3);
+  border-color: rgba(9, 177, 186, 0.85);
+  transform: translateY(-1px);
+}
+
+.vinted-logo {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: cover;
+}
+
+.sale-disclaimer {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  max-width: 380px;
+  line-height: 1.5;
+}
+
+.no-vinted {
+  font-size: 14px;
+  color: var(--color-text-muted);
 }
 
 .browse-controls {

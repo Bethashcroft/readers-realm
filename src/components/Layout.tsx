@@ -40,7 +40,7 @@ function Layout() {
     <div className="layout">
       <nav className="navbar">
         <Link to="/" className="navbar-brand">
-          Readers Realm
+          The Readers Universe
         </Link>
         <ul className="navbar-links">
           {user ? (
@@ -88,6 +88,10 @@ function Layout() {
       <main className="main-content">
         <Outlet />
       </main>
+      <footer className="footer">
+        <span className="footer-brand">The Readers Universe</span> — your
+        neighbourhood reading community
+      </footer>
     </div>
   );
 }

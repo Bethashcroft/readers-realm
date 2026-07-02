@@ -8,6 +8,7 @@ export interface BookResponse {
   shelf: string;
   rating: number | null;
   userId: string;
+  sellerVintedUrl: string;
 }
 
 export interface AddBookRequest {

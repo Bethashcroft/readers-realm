@@ -10,5 +10,9 @@ public class AppUser : IdentityUser
 
     [MaxLength(500)]
     public string Bio { get; set; } = string.Empty;
+
+    [MaxLength(300)]
+    public string VintedUrl { get; set; } = string.Empty;
+
     public DateTime JoinedDate { get; set; } = DateTime.UtcNow;
 }

@@ -10,11 +10,16 @@
   justify-content: space-between;
   padding: 16px 32px;
   border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg);
+  background-color: rgba(10, 8, 32, 0.55);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .navbar-brand {
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 22px;
   font-weight: 700;
   color: var(--color-primary);
 }
@@ -23,6 +28,17 @@
   display: flex;
   list-style: none;
   gap: 24px;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.navbar-links a:hover {
+  color: var(--color-text);
 }
 
 .navbar-links a.active {
@@ -41,12 +57,27 @@
 .nav-logout {
   background: none;
   border: none;
-  color: inherit;
+  color: var(--color-text-muted);
   font: inherit;
   cursor: pointer;
+  transition: color 0.15s ease;
 }
 
 .nav-logout:hover {
+  color: var(--color-text);
+}
+
+.footer {
+  border-top: 1px solid var(--color-border);
+  padding: 32px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
   color: var(--color-primary);
 }
 

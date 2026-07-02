@@ -38,6 +38,7 @@ public class UsersController : ControllerBase
                 UserName = user.UserName!,
                 DisplayName = user.DisplayName,
                 Bio = user.Bio,
+                VintedUrl = user.VintedUrl,
                 JoinedDate = user.JoinedDate,
             }
         );

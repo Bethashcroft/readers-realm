@@ -18,6 +18,7 @@ function Profile() {
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
+  const [vintedUrl, setVintedUrl] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -30,6 +31,7 @@ function Profile() {
         setProfile(data);
         setDisplayName(data.displayName);
         setBio(data.bio);
+        setVintedUrl(data.vintedUrl);
         const userBooks = await getUserBooks(username);
         setBooks(userBooks);
       } catch (err) {
@@ -47,7 +49,7 @@ function Profile() {
     setError("");
 
     try {
-      const updated = await updateProfile({ displayName, bio });
+      const updated = await updateProfile({ displayName, bio, vintedUrl });
       setProfile(updated);
       setEditing(false);
     } catch (err) {
@@ -86,6 +88,14 @@ function Profile() {
                 onChange={(e) => setBio(e.target.value)}
                 rows={3}
               />
+              <label htmlFor="vintedUrl">Vinted Profile URL</label>
+              <input
+                type="url"
+                id="vintedUrl"
+                placeholder="https://www.vinted.co.uk/member/..."
+                value={vintedUrl}
+                onChange={(e) => setVintedUrl(e.target.value)}
+              />
               {error && <p className="form-error">{error}</p>}
               <div className="edit-profile-actions">
                 <button className="btn btn-primary" onClick={handleSave}>
@@ -97,6 +107,7 @@ function Profile() {
                     setEditing(false);
                     setDisplayName(profile.displayName);
                     setBio(profile.bio);
+                    setVintedUrl(profile.vintedUrl);
                   }}
                 >
                   Cancel
@@ -108,28 +119,37 @@ function Profile() {
               <h1>{profile.displayName}</h1>
               <p className="profile-username">@{profile.userName}</p>
               <p className="profile-bio">{profile.bio || "No bio yet"}</p>
-              {isOwnProfile && (
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setEditing(true)}
+              {profile.vintedUrl && (
+                <a
+                  className="profile-vinted"
+                  href={profile.vintedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Edit Profile
-                </button>
+                  Vinted profile ↗
+                </a>
               )}
+              <div className="profile-meta">
+                {isOwnProfile && (
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => setEditing(true)}
+                  >
+                    Edit Profile
+                  </button>
+                )}
+                <div className="profile-detail-card">
+                  <h2>Member Since</h2>
+                  <p>
+                    {new Date(profile.joinedDate).toLocaleDateString("en-GB", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
             </>
           )}
-        </div>
-      </div>
-
-      <div className="profile-details">
-        <div className="profile-detail-card">
-          <h2>Member Since</h2>
-          <p>
-            {new Date(profile.joinedDate).toLocaleDateString("en-GB", {
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
         </div>
       </div>
 

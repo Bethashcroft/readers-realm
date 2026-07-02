@@ -11,6 +11,7 @@ const book: BookResponse = {
   shelf: "read",
   rating: 4,
   userId: "u1",
+  sellerVintedUrl: "",
 };
 
 function renderCard(b: BookResponse = book) {

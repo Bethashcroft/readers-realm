@@ -55,12 +55,12 @@
 }
 
 .form-error {
-  color: #dc2626;
+  color: #fca5a5;
   font-size: 14px;
-  background-color: #fef2f2;
+  background-color: rgba(239, 68, 68, 0.12);
   padding: 10px 12px;
   border-radius: 6px;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .form-footer {

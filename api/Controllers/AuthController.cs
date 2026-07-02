@@ -91,6 +91,7 @@ public class AuthController : ControllerBase
                 UserName = user.UserName!,
                 DisplayName = user.DisplayName,
                 Bio = user.Bio,
+                VintedUrl = user.VintedUrl,
                 JoinedDate = user.JoinedDate,
             }
         );
@@ -110,6 +111,7 @@ public class AuthController : ControllerBase
 
         user.DisplayName = request.DisplayName;
         user.Bio = request.Bio;
+        user.VintedUrl = request.VintedUrl;
 
         await _userManager.UpdateAsync(user);
 
@@ -119,6 +121,7 @@ public class AuthController : ControllerBase
                 UserName = user.UserName!,
                 DisplayName = user.DisplayName,
                 Bio = user.Bio,
+                VintedUrl = user.VintedUrl,
                 JoinedDate = user.JoinedDate,
             }
         );
@@ -175,6 +178,7 @@ public class ProfileResponse
     public string UserName { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;
+    public string VintedUrl { get; set; } = string.Empty;
     public DateTime JoinedDate { get; set; }
 }
 
@@ -182,4 +186,5 @@ public class UpdateProfileRequest
 {
     public string DisplayName { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;
+    public string VintedUrl { get; set; } = string.Empty;
 }
