@@ -6,6 +6,10 @@
   margin-bottom: 2.5rem;
 }
 
+.requests-section h2 {
+  margin-bottom: 1rem;
+}
+
 .request-card {
   display: flex;
   justify-content: space-between;

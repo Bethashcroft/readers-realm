@@ -74,12 +74,16 @@
   max-width: 90%;
 }
 
-.dashboard-arrow {
-  position: absolute;
-  top: 26px;
-  right: 28px;
-  color: var(--color-primary);
-  font-size: 22px;
+.dashboard-stat {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(167, 139, 250, 0.14);
+  border: 1px solid rgba(167, 139, 250, 0.32);
+  color: #d8cdff;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 @media (max-width: 640px) {

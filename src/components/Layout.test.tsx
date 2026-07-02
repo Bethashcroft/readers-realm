@@ -1,6 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Layout from "./Layout";
+
+const navbar = () =>
+  within(screen.getByRole("navigation", { name: "Primary" }));
 
 const { mockUseAuth, mockGetMyRequests } = vi.hoisted(() => ({
   mockUseAuth: vi.fn(),
@@ -41,22 +44,22 @@ describe("Layout", () => {
     mockUseAuth.mockReturnValue({ user: null, logout: vi.fn() });
     renderLayout();
 
-    expect(screen.getByText("Login")).toBeInTheDocument();
-    expect(screen.getByText("Register")).toBeInTheDocument();
-    expect(screen.queryByText("My Shelves")).not.toBeInTheDocument();
-    expect(screen.queryByText("Add Book")).not.toBeInTheDocument();
-    expect(screen.queryByText("Browse")).not.toBeInTheDocument();
+    expect(navbar().getByText("Login")).toBeInTheDocument();
+    expect(navbar().getByText("Register")).toBeInTheDocument();
+    expect(navbar().queryByText("My Shelves")).not.toBeInTheDocument();
+    expect(navbar().queryByText("Add Book")).not.toBeInTheDocument();
+    expect(navbar().queryByText("Browse")).not.toBeInTheDocument();
   });
 
   it("shows the app links when logged in", () => {
     mockUseAuth.mockReturnValue({ user: loggedInUser, logout: vi.fn() });
     renderLayout();
 
-    expect(screen.getByText("My Shelves")).toBeInTheDocument();
-    expect(screen.getByText("Add Book")).toBeInTheDocument();
-    expect(screen.getByText("Browse")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
-    expect(screen.queryByText("Login")).not.toBeInTheDocument();
+    expect(navbar().getByText("My Shelves")).toBeInTheDocument();
+    expect(navbar().getByText("Add Book")).toBeInTheDocument();
+    expect(navbar().getByText("Browse")).toBeInTheDocument();
+    expect(navbar().getByText("Logout")).toBeInTheDocument();
+    expect(navbar().queryByText("Login")).not.toBeInTheDocument();
   });
 
   it("shows a badge with the count of incoming pending requests", async () => {

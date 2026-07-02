@@ -38,7 +38,32 @@ function Layout() {
 
   return (
     <div className="layout">
-      <nav className="navbar">
+      <nav className="navbar" aria-label="Primary">
+        <svg
+          className="nav-decor nav-decor-planet"
+          viewBox="0 0 130 130"
+          strokeWidth="4"
+          aria-hidden="true"
+        >
+          <circle cx="65" cy="58" r="32" />
+          <ellipse cx="65" cy="64" rx="56" ry="17" transform="rotate(-18 65 64)" />
+        </svg>
+        <svg
+          className="nav-decor nav-decor-star nav-decor-star-1"
+          viewBox="0 0 40 40"
+          strokeWidth="3"
+          aria-hidden="true"
+        >
+          <path d="M20 3 L23.5 16.5 L37 20 L23.5 23.5 L20 37 L16.5 23.5 L3 20 L16.5 16.5 Z" />
+        </svg>
+        <svg
+          className="nav-decor nav-decor-star nav-decor-star-2"
+          viewBox="0 0 40 40"
+          strokeWidth="3"
+          aria-hidden="true"
+        >
+          <path d="M20 3 L23.5 16.5 L37 20 L23.5 23.5 L20 37 L16.5 23.5 L3 20 L16.5 16.5 Z" />
+        </svg>
         <Link to="/" className="navbar-brand">
           The Readers Universe
         </Link>
@@ -63,9 +88,7 @@ function Layout() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to={`/profile/${user.userName}`}>
-                  {user.displayName}
-                </NavLink>
+                <NavLink to={`/profile/${user.userName}`}>Profile</NavLink>
               </li>
               <li>
                 <button className="nav-logout" onClick={handleLogout}>
@@ -89,8 +112,21 @@ function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
-        <span className="footer-brand">The Readers Universe</span> — your
-        neighbourhood reading community
+        <div className="footer-inner">
+          <span>© {new Date().getFullYear()} The Readers Universe</span>
+          <span className="footer-made">
+            Made for book lovers
+            <svg
+              className="footer-book"
+              viewBox="0 0 130 100"
+              aria-hidden="true"
+            >
+              <path d="M65 22 C 48 11, 22 11, 9 19 L 9 78 C 22 70, 48 70, 65 80" />
+              <path d="M65 22 C 82 11, 108 11, 121 19 L 121 78 C 108 70, 82 70, 65 80" />
+              <line x1="65" y1="22" x2="65" y2="80" />
+            </svg>
+          </span>
+        </div>
       </footer>
     </div>
   );

@@ -15,9 +15,45 @@
   position: sticky;
   top: 0;
   z-index: 20;
+  overflow: hidden;
+}
+
+.nav-decor {
+  position: absolute;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.nav-decor-planet {
+  width: 38px;
+  top: 50%;
+  left: 29%;
+  transform: translateY(-50%);
+  opacity: 0.3;
+}
+
+.nav-decor-star {
+  width: 15px;
+  opacity: 0.6;
+}
+
+.nav-decor-star-1 {
+  top: 26%;
+  left: 40%;
+}
+
+.nav-decor-star-2 {
+  width: 10px;
+  bottom: 24%;
+  left: 35%;
 }
 
 .navbar-brand {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
@@ -25,10 +61,18 @@
 }
 
 .navbar-links {
+  position: relative;
+  z-index: 1;
   display: flex;
   list-style: none;
   gap: 24px;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .nav-decor {
+    display: none;
+  }
 }
 
 .navbar-links a {
@@ -69,16 +113,38 @@
 
 .footer {
   border-top: 1px solid var(--color-border);
-  padding: 32px;
-  text-align: center;
+  background: rgba(10, 8, 32, 0.4);
+  backdrop-filter: blur(12px);
+  padding: 24px 32px;
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.footer-brand {
-  font-family: var(--font-display);
-  font-weight: 700;
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-made {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--color-primary);
+}
+
+.footer-book {
+  width: 22px;
+  height: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-badge {
